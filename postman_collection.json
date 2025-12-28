@@ -1,0 +1,211 @@
+"""
+postman_collection.json
+Importar en Postman para testing de API
+
+Ver: https://www.postman.com/
+"""
+
+{
+  "info": {
+    "name": "ECCI Control API",
+    "description": "Colección de endpoints para ECCI Control System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"student@university.edu\",\n  \"password\": \"SecurePassword123!\",\n  \"full_name\": \"Juan García\",\n  \"student_id\": \"2023001\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"juan@university.edu\",\n  \"password\": \"SecurePassword123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "me"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Devices",
+      "item": [
+        {
+          "name": "Create Device",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"MacBook Pro\",\n  \"device_type\": \"laptop\",\n  \"serial_number\": \"C02AB123DE45\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/devices/",
+              "host": ["{{base_url}}"],
+              "path": ["devices", ""]
+            }
+          }
+        },
+        {
+          "name": "Get Devices",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/devices/",
+              "host": ["{{base_url}}"],
+              "path": ["devices", ""]
+            }
+          }
+        },
+        {
+          "name": "Get Device QR",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/devices/{{device_id}}/qr",
+              "host": ["{{base_url}}"],
+              "path": ["devices", "{{device_id}}", "qr"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Access",
+      "item": [
+        {
+          "name": "Scan QR",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"qr_data\": \"{{qr_data}}\",\n  \"access_type\": \"entrada\",\n  \"location\": \"Puerta Principal\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/access/scan",
+              "host": ["{{base_url}}"],
+              "path": ["access", "scan"]
+            }
+          }
+        },
+        {
+          "name": "Get Access History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/access/history?limit=100",
+              "host": ["{{base_url}}"],
+              "path": ["access", "history"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "100"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "device_id",
+      "value": ""
+    },
+    {
+      "key": "qr_data",
+      "value": ""
+    }
+  ]
+}

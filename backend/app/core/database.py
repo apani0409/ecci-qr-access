@@ -1,0 +1,27 @@
+from sqlalchemy import create_engine
+from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.pool import NullPool
+
+from app.core.config import settings
+
+# Create engine
+engine = create_engine(
+    settings.SQLALCHEMY_DATABASE_URL,
+    echo=settings.DEBUG,
+    poolclass=NullPool,
+)
+
+# Create session factory
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# Create base class for models
+Base = declarative_base()
+
+
+def get_db():
+    """Dependency for getting database session"""
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
