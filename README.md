@@ -45,6 +45,20 @@ ECCI Control digitaliza completamente este proceso mediante:
 
 ---
 
+## 🎨 Diseño y Prototipo
+
+Puedes ver el prototipo interactivo de la aplicación en Figma:
+
+**[📱 Ver Prototipo en Figma](https://www.figma.com/proto/EyG6lHbArhBr6V12YopBLP/QR-access?node-id=0-1&t=ObsTjXozztvs68S2-1)**
+
+El prototipo incluye:
+- Flujos completos de usuario
+- Diseño de todas las pantallas principales
+- Interacciones y navegación
+- Sistema de diseño con componentes reutilizables
+
+---
+
 ## ✨ Características
 
 ### 🔐 Autenticación y Seguridad
