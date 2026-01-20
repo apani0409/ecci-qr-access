@@ -31,34 +31,51 @@ def init_db():
 
         print("\nCreating sample users...")
         
-        # Create sample users
+        # Create demo users with different roles
+        from app.models.role import UserRole
+        
         user1 = User(
             id=uuid.uuid4(),
-            email="juan@university.edu",
-            password_hash=hash_password("SecurePassword123!"),
-            full_name="Juan García López",
-            student_id="2023001",
+            email="admin@ecci.com",
+            password_hash=hash_password("Admin123!"),
+            full_name="Admin Usuario",
+            student_id="ADMIN001",
+            role=UserRole.ADMIN,
             is_active=True,
         )
 
         user2 = User(
             id=uuid.uuid4(),
-            email="maria@university.edu",
-            password_hash=hash_password("SecurePassword456!"),
-            full_name="María Rodríguez Silva",
-            student_id="2023002",
+            email="guard@ecci.com",
+            password_hash=hash_password("Guard123!"),
+            full_name="Guardia Seguridad",
+            student_id="GUARD001",
+            role=UserRole.SECURITY,
+            is_active=True,
+        )
+        
+        user3 = User(
+            id=uuid.uuid4(),
+            email="student@ecci.com",
+            password_hash=hash_password("Student123!"),
+            full_name="Estudiante Demo",
+            student_id="STU001",
+            role=UserRole.STUDENT,
             is_active=True,
         )
 
         db.add(user1)
         db.add(user2)
+        db.add(user3)
         db.commit()
         db.refresh(user1)
         db.refresh(user2)
+        db.refresh(user3)
 
         print(f"✓ Created users:")
-        print(f"  - {user1.full_name} ({user1.email})")
-        print(f"  - {user2.full_name} ({user2.email})")
+        print(f"  - {user1.full_name} ({user1.email}) - {user1.role.value}")
+        print(f"  - {user2.full_name} ({user2.email}) - {user2.role.value}")
+        print(f"  - {user3.full_name} ({user3.email}) - {user3.role.value}")
 
         print("\nCreating sample devices...")
 
@@ -120,9 +137,10 @@ def init_db():
         print(f"✓ Created access records: {access1.access_type.value}, {access2.access_type.value}")
 
         print("\n✓ Database initialized successfully!")
-        print("\nSample credentials:")
-        print("  User 1: juan@university.edu / SecurePassword123!")
-        print("  User 2: maria@university.edu / SecurePassword456!")
+        print("\n🔐 Demo User Credentials:")
+        print("  Admin:    admin@ecci.com / Admin123!")
+        print("  Guard:    guard@ecci.com / Guard123!")
+        print("  Student:  student@ecci.com / Student123!")
 
     except Exception as e:
         print(f"✗ Error initializing database: {e}")

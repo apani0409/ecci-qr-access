@@ -2,6 +2,7 @@ from pydantic import BaseModel, EmailStr, Field
 from datetime import datetime
 from uuid import UUID
 from typing import Optional
+from app.models.role import UserRole
 
 
 class UserCreate(BaseModel):
@@ -9,6 +10,7 @@ class UserCreate(BaseModel):
     password: str = Field(..., min_length=8)
     full_name: str = Field(..., min_length=3)
     student_id: str = Field(..., min_length=5)
+    role: Optional[UserRole] = UserRole.STUDENT  # Default to student
 
     class Config:
         json_schema_extra = {
@@ -17,6 +19,7 @@ class UserCreate(BaseModel):
                 "password": "SecurePassword123!",
                 "full_name": "Juan García",
                 "student_id": "2023001",
+                "role": "student"
             }
         }
 
@@ -34,12 +37,32 @@ class UserLogin(BaseModel):
         }
 
 
+class BiometricAuthRequest(BaseModel):
+    """Request for biometric authentication"""
+    email: EmailStr
+    biometric_signature: str  # Signed challenge from device
+    device_id: str
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "email": "student@university.edu",
+                "biometric_signature": "base64_encoded_signature",
+                "device_id": "device-uuid"
+            }
+        }
+
+
 class UserResponse(BaseModel):
     id: UUID
     email: str
     full_name: str
     student_id: str
+    role: UserRole
     is_active: bool
+    biometric_enabled: bool
+    profile_photo: Optional[str] = None
+    dark_mode: bool
     created_at: datetime
     updated_at: datetime
 
@@ -52,7 +75,9 @@ class UserResponse(BaseModel):
                 "email": "student@university.edu",
                 "full_name": "Juan García",
                 "student_id": "2023001",
+                "role": "student",
                 "is_active": True,
+                "biometric_enabled": False,
                 "created_at": "2024-01-15T10:30:00+00:00",
                 "updated_at": "2024-01-15T10:30:00+00:00",
             }

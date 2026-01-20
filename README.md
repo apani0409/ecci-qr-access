@@ -1,589 +1,504 @@
-# ECCI Control System - Documentación Completa
+# 🎓 ECCI Control System
 
-Sistema integral de **Control de Acceso y Registro de Dispositivos** para Estudiantes Universitarios.
+<div align="center">
 
-## 📋 Tabla de Contenidos
+![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+![Python](https://img.shields.io/badge/python-3.11+-blue.svg)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.104.1-009688.svg)
+![React](https://img.shields.io/badge/React-18.2-61dafb.svg)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791.svg)
 
-1. [Introducción](#introducción)
-2. [Stack Tecnológico](#stack-tecnológico)
-3. [Características](#características)
-4. [Instalación Rápida](#instalación-rápida)
-5. [Estructura del Proyecto](#estructura-del-proyecto)
-6. [Guía de Uso](#guía-de-uso)
-7. [Endpoints API](#endpoints-api)
-8. [Ejemplo de Flujo Completo](#ejemplo-de-flujo-completo)
+**Sistema integral de control de acceso y registro de dispositivos para instituciones educativas**
 
-## Introducción
+[Características](#-características) •
+[Tecnologías](#-stack-tecnológico) •
+[Instalación](#-instalación-rápida) •
+[Uso](#-uso) •
+[API](#-api-documentation) •
+[Screenshots](#-screenshots)
 
-ECCI Control es un sistema web moderno para gestionar el acceso de estudiantes a través de dispositivos registrados. Utiliza códigos QR únicos para cada dispositivo, permitiendo un registro automatizado de entradas y salidas.
+</div>
 
-### Objetivos
-- ✅ Registro seguro de usuarios
-- ✅ Gestión de dispositivos personales
-- ✅ Generación automática de códigos QR
-- ✅ Registro de accesos en tiempo real
-- ✅ Historial completo de movimientos
-- ✅ Interfaz amigable y responsiva
+---
 
-## Stack Tecnológico
+## 📖 Descripción
+
+ECCI Control es una **solución full-stack moderna** para la gestión digital de acceso estudiantil mediante dispositivos electrónicos registrados. El sistema reemplaza los métodos tradicionales de registro manual con una plataforma automatizada que utiliza **códigos QR únicos** para cada dispositivo, permitiendo un control de acceso eficiente y trazable.
+
+### 🎯 Problema que Resuelve
+
+Las instituciones educativas tradicionales dependen de registros manuales en papel para el control de entrada/salida de dispositivos electrónicos, lo que resulta en:
+- ❌ Procesos lentos y propensos a errores
+- ❌ Falta de trazabilidad histórica
+- ❌ Gestión ineficiente de información
+- ❌ Dificultad para generar reportes
+
+### ✅ Solución
+
+ECCI Control digitaliza completamente este proceso mediante:
+- ✅ Registro automatizado con códigos QR
+- ✅ Historial completo de accesos por dispositivo y usuario
+- ✅ Gestión centralizada de dispositivos
+- ✅ Interfaz intuitiva multiplataforma (Web + Mobile)
+- ✅ Sistema seguro con autenticación JWT
+
+---
+
+## ✨ Características
+
+### 🔐 Autenticación y Seguridad
+
+- **JWT Authentication** - Sistema robusto de tokens con refresh automático
+- **Password Hashing** - bcrypt para almacenamiento seguro de contraseñas
+- **Role-Based Access Control (RBAC)** - Sistema de roles (Admin, Security, Student)
+- **Biometric Authentication** - Autenticación mediante huella dactilar o reconocimiento facial
+- **Rate Limiting** - Protección contra ataques de fuerza bruta
+- **CORS Configurado** - Políticas de seguridad para producción
+
+### 📱 Gestión de Dispositivos
+- Creación y registro de dispositivos personales
+- Generación automática de códigos QR únicos
+- Soporte para múltiples tipos de dispositivos (laptop, tablet, smartphone)
+- Actualización de información del dispositivo
+- Eliminación segura con validación de permisos
+- Visualización y descarga de códigos QR
+
+### 📊 Registro de Accesos
+- Escaneo de códigos QR para entrada/salida
+- Timestamp automático con zona horaria UTC
+- Registro de ubicación opcional
+- Historial completo por usuario
+- Historial específico por dispositivo
+- Consultas optimizadas con límites configurables
+
+### 🚀 Características Empresariales Avanzadas
+- **Redis Cache** - Cache distribuido para alto rendimiento
+- **Webhook System** - Notificaciones en tiempo real a sistemas externos
+- **Dark Mode** - Interfaz con soporte de tema claro/oscuro
+- **Comprehensive Logging** - Sistema de logs estructurados con rotación
+- **Error Handling** - Manejo robusto de errores y excepciones personalizadas
+
+### 🎨 Interfaces Multiplataforma
+- **Frontend Web**: React + Vite + Tailwind CSS
+- **Mobile App**: React Native + Expo
+- Diseño responsivo y moderno
+- UX optimizada para flujos rápidos
+- Integración completa con backend
+
+---
+
+## 🛠 Stack Tecnológico
 
 ### Backend
 ```
-FastAPI 0.104.1         ← Framework web moderno
-PostgreSQL 12+          ← Base de datos relacional
-SQLAlchemy 2.0          ← ORM Python
-Alembic                 ← Migraciones de BD
-JWT (python-jose)       ← Autenticación
-Pydantic 2.5            ← Validación de datos
-qrcode + Pillow         ← Generación de QR
-Uvicorn                 ← Servidor ASGI
+🐍 FastAPI 0.104.1         → Framework web moderno y rápido
+🗄️ PostgreSQL 15+          → Base de datos relacional robusta
+🔗 SQLAlchemy 2.0          → ORM Python con soporte async
+📦 Alembic                 → Migraciones de base de datos
+🔒 JWT + Bcrypt            → Autenticación y seguridad
+⚡ Redis 7                 → Cache distribuido y rate limiting
+🎣 Webhooks + HMAC         → Sistema de notificaciones externas
+✅ Pydantic 2.5            → Validación de datos con type hints
+📱 QRCode + Pillow         → Generación de códigos QR
+🐌 Slowapi                 → Rate limiting middleware
+🚀 Uvicorn                 → Servidor ASGI de alto rendimiento
+🧪 Pytest                  → Testing y cobertura de código
 ```
 
 ### Frontend
 ```
-React 18.2              ← Librería UI
-Vite 5.0                ← Build tool rápido
-Tailwind CSS 3.3        ← Utilidades CSS
-React Router 6.20       ← Enrutamiento
-Zustand 4.4             ← State management
-Axios 1.6               ← HTTP client
-Heroicons 2.0           ← Iconos
+⚛️ React 18.2              → Biblioteca UI declarativa
+⚡ Vite 5.0                → Build tool ultrarrápido
+🎨 Tailwind CSS 3.3        → Framework CSS utility-first
+🧭 React Router 6.20       → Enrutamiento SPA
+🐻 Zustand 4.4             → State management minimalista
+🌐 Axios 1.6               → Cliente HTTP con interceptores
+🎯 Heroicons 2.0           → Iconos SVG optimizados
+```
+
+### Mobile
+```
+📱 React Native            → Framework multiplataforma
+🎪 Expo                    → Toolchain y SDK completo
+🧭 React Navigation        → Navegación nativa
+📸 Expo Camera             → Escaneo de códigos QR
 ```
 
 ### DevOps
 ```
-Docker                  ← Containerización
-PostgreSQL Docker       ← BD en contenedor
-Alembic CLI             ← Migraciones
+🐳 Docker                  → Containerización
+🐘 PostgreSQL Container    → Base de datos en contenedor
+📝 Alembic CLI             → Gestión de migraciones
+🔧 Docker Compose          → Orquestación multi-contenedor
 ```
 
-## Características
+---
 
-### 👤 Autenticación y Usuarios
-- [x] Registro con validación de email único
-- [x] Login seguro con JWT
-- [x] Tokens con expiración configurable
-- [x] Contraseñas hasheadas con bcrypt
-- [x] Perfil de usuario con información personal
+## 🚀 Instalación Rápida
 
-### 📱 Gestión de Dispositivos
-- [x] Crear dispositivos con serial number único
-- [x] Generación automática de QR único por dispositivo
-- [x] Visualización de QR en base64
-- [x] Editar información del dispositivo
-- [x] Eliminar dispositivos
-- [x] Listar dispositivos del usuario
+### Prerrequisitos
 
-### 🔐 Códigos QR
-- [x] Generación automática en formato PNG
-- [x] Conversión a base64 para visualización
-- [x] Datos QR únicos (UUID)
-- [x] Descarga de imágenes QR
-- [x] Visualización en diferentes pantallas
+- Python 3.11+
+- Node.js 18+
+- Docker & Docker Compose (recomendado)
+- PostgreSQL 15+ (si no usas Docker)
 
-### 📊 Registro de Accesos
-- [x] Escaneo de códigos QR
-- [x] Registro de entrada/salida
-- [x] Timestamp automático
-- [x] Ubicación opcional
-- [x] Historial completo por usuario
-- [x] Historial por dispositivo
+### Opción 1: Docker (Recomendado)
 
-### 🛡️ Seguridad
-- [x] Validación JWT en todas las rutas protegidas
-- [x] Verificación de propiedad de dispositivos
-- [x] Hash de contraseñas
-- [x] CORS configurable
-- [x] Índices en BD para performance
-- [x] Validación Pydantic en inputs
+```bash
+# 1. Clonar el repositorio
+git clone https://github.com/tu-usuario/ecci-control.git
+cd ecci-control
 
-## Instalación Rápida
+# 2. Configurar variables de entorno
+cp .env.example .env
+# Editar .env y configurar SECRET_KEY
 
-### Opción 1: Instalación Manual
+# 3. Levantar todos los servicios
+docker-compose up -d
+
+# 4. El sistema estará disponible en:
+# - Backend: http://localhost:8000
+# - Frontend: http://localhost:3000
+# - API Docs: http://localhost:8000/docs
+```
+
+### Opción 2: Instalación Manual
 
 #### Backend
 
 ```bash
-# 1. Crear BD
-createdb ecci_control
-
-# 2. Navegar al backend
 cd backend
 
-# 3. Crear entorno virtual
+# Crear entorno virtual
 python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+source venv/bin/activate  # En Windows: venv\Scripts\activate
 
-# 4. Instalar dependencias
+# Instalar dependencias
 pip install -r requirements.txt
 
-# 5. Configurar .env
+# Configurar variables de entorno
 cp .env.example .env
-# Editar con credenciales reales
+# Editar .env con tus configuraciones
 
-# 6. Migraciones
+# Ejecutar migraciones
 alembic upgrade head
 
-# 7. Inicializar datos
-python init_db.py
-
-# 8. Ejecutar
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+# Iniciar servidor
+uvicorn app.main:app --reload
 ```
 
 #### Frontend
 
 ```bash
-# 1. Navegar a frontend
 cd frontend
 
-# 2. Instalar dependencias
+# Instalar dependencias
 npm install
 
-# 3. Variables de entorno (opcional)
-echo 'VITE_API_URL=http://localhost:8000' > .env.local
+# Configurar variables de entorno
+cp .env.example .env
 
-# 4. Ejecutar
+# Iniciar servidor de desarrollo
 npm run dev
 ```
 
-### Opción 2: Docker (Próximamente)
+#### Mobile (Opcional)
 
 ```bash
-docker-compose up -d
+cd mobile2
+
+# Instalar dependencias
+npm install
+
+# Configurar API URL en src/constants/api.js
+
+# Iniciar Expo
+npm start
 ```
-
-## Estructura del Proyecto
-
-```
-ecci-control/
-├── backend/
-│   ├── app/
-│   │   ├── api/
-│   │   │   └── endpoints/
-│   │   │       ├── auth.py         # Login, registro
-│   │   │       ├── users.py        # Perfil
-│   │   │       ├── devices.py      # CRUD dispositivos
-│   │   │       └── access.py       # QR y accesos
-│   │   ├── core/
-│   │   │   ├── config.py           # Configuración
-│   │   │   ├── database.py         # Conexión BD
-│   │   │   └── security.py         # JWT, hash
-│   │   ├── models/
-│   │   │   ├── user.py             # Modelo User
-│   │   │   ├── device.py           # Modelo Device
-│   │   │   └── access_record.py    # Modelo AccessRecord
-│   │   ├── schemas/                # Pydantic schemas
-│   │   ├── services/               # Lógica de negocio
-│   │   ├── utils/                  # Helpers
-│   │   └── main.py                 # App principal
-│   ├── alembic/
-│   │   ├── versions/               # Migraciones
-│   │   └── env.py
-│   ├── init_db.py                  # Script inicialización
-│   ├── requirements.txt            # Dependencias
-│   └── README.md
-│
-├── frontend/
-│   ├── src/
-│   │   ├── components/             # Componentes React
-│   │   ├── pages/                  # Páginas principales
-│   │   ├── services/               # Llamadas API
-│   │   ├── stores/                 # Estado (Zustand)
-│   │   ├── styles/                 # CSS global
-│   │   ├── App.jsx                 # Componente raíz
-│   │   └── main.jsx                # Entry point
-│   ├── public/                     # Archivos estáticos
-│   ├── vite.config.js              # Config Vite
-│   ├── tailwind.config.js          # Config Tailwind
-│   ├── package.json                # Dependencias npm
-│   └── README.md
-│
-├── wireframes/                     # Diseños UI
-│   ├── file1.png
-│   └── file2.png
-│
-└── README.md                       # Este archivo
-```
-
-## Guía de Uso
-
-### Flujo: Nuevo Usuario
-
-```
-1. Ir a /register
-2. Llenar formulario (email, contraseña, nombre, ID estudiante)
-3. Sistema crea usuario y genera JWT automáticamente
-4. Redirige a /home
-5. Usuario logueado ✅
-```
-
-### Flujo: Crear Dispositivo
-
-```
-1. En /devices click "+ Nuevo Dispositivo"
-2. Llenar:
-   - Nombre: "MacBook Pro"
-   - Tipo: "laptop"
-   - Serial: "C02AB123DE45"
-3. Sistema:
-   - Genera UUID único (qr_data)
-   - Crea código QR en base64
-   - Guarda en BD
-4. Mostrar QR para descargar/visualizar ✅
-```
-
-### Flujo: Registrar Acceso
-
-```
-1. Ir a /scan
-2. Escanear o pegar código QR
-3. Seleccionar: entrada o salida
-4. Opcional: añadir ubicación
-5. Click "Registrar Acceso"
-6. Sistema:
-   - Busca dispositivo por qr_data
-   - Crea AccessRecord con timestamp
-   - Responde con confirmación
-7. Historial actualizado ✅
-```
-
-### Flujo: Ver Historial
-
-```
-1. En /home click "Ir al Historial"
-2. Ver tabla con:
-   - Dispositivo
-   - Tipo de acceso
-   - Fecha y hora
-   - Ubicación
-3. Filtrar por dispositivo si lo desea
-```
-
-## Endpoints API
-
-### 🔐 Autenticación (Sin token)
-
-```http
-POST /auth/register
-Content-Type: application/json
-
-{
-  "email": "student@university.edu",
-  "password": "SecurePassword123!",
-  "full_name": "Juan García",
-  "student_id": "2023001"
-}
-
-Response 201:
-{
-  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "token_type": "bearer",
-  "user": {...}
-}
-```
-
-```http
-POST /auth/login
-Content-Type: application/json
-
-{
-  "email": "student@university.edu",
-  "password": "SecurePassword123!"
-}
-
-Response 200: [mismo formato que register]
-```
-
-```http
-GET /auth/me
-Authorization: Bearer {token}
-
-Response 200: {user data}
-```
-
-### 👤 Usuarios (Con token)
-
-```http
-GET /users/me
-Authorization: Bearer {token}
-
-Response 200: {user data}
-```
-
-### 📱 Dispositivos (Con token)
-
-```http
-POST /devices/
-Authorization: Bearer {token}
-Content-Type: application/json
-
-{
-  "name": "MacBook Pro",
-  "device_type": "laptop",
-  "serial_number": "C02AB123DE45"
-}
-
-Response 201:
-{
-  "device": {
-    "id": "550e8400-e29b-41d4-a716-446655440000",
-    "user_id": "...",
-    "name": "MacBook Pro",
-    "device_type": "laptop",
-    "serial_number": "C02AB123DE45",
-    "qr_data": "550e8400-e29b-41d4-a716-446655440001",
-    "qr_code": "data:image/png;base64,..."
-  },
-  "qr_image_base64": "data:image/png;base64,..."
-}
-```
-
-```http
-GET /devices/
-Authorization: Bearer {token}
-
-Response 200: [
-  {device1},
-  {device2},
-  ...
-]
-```
-
-```http
-GET /devices/{device_id}
-Authorization: Bearer {token}
-
-Response 200: {device data}
-```
-
-```http
-PUT /devices/{device_id}
-Authorization: Bearer {token}
-Content-Type: application/json
-
-{
-  "name": "MacBook Pro 14",
-  "device_type": "laptop"
-}
-
-Response 200: {updated device}
-```
-
-```http
-DELETE /devices/{device_id}
-Authorization: Bearer {token}
-
-Response 204: (no content)
-```
-
-```http
-GET /devices/{device_id}/qr
-Authorization: Bearer {token}
-
-Response 200:
-{
-  "device_id": "...",
-  "qr_data": "550e8400-...",
-  "qr_image_base64": "data:image/png;base64,..."
-}
-```
-
-### 📊 Acceso (Escaneo)
-
-```http
-POST /access/scan
-Content-Type: application/json
-(SIN autenticación - permite escaneo anónimo)
-
-{
-  "qr_data": "550e8400-e29b-41d4-a716-446655440001",
-  "access_type": "entrada",
-  "location": "Puerta Principal"
-}
-
-Response 201:
-{
-  "id": "...",
-  "device_id": "...",
-  "user_id": "...",
-  "access_type": "entrada",
-  "timestamp": "2024-01-15T10:30:00+00:00",
-  "location": "Puerta Principal"
-}
-```
-
-```http
-GET /access/history?limit=100
-Authorization: Bearer {token}
-
-Response 200: [
-  {access_record1},
-  {access_record2},
-  ...
-]
-```
-
-```http
-GET /access/device/{device_id}/history?limit=100
-Authorization: Bearer {token}
-
-Response 200: [access records para device]
-```
-
-## Ejemplo de Flujo Completo
-
-### Paso 1: Registrar Usuario
-
-```bash
-curl -X POST "http://localhost:8000/auth/register" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "carlos@university.edu",
-    "password": "MyPassword123!",
-    "full_name": "Carlos Mendez",
-    "student_id": "2024001"
-  }'
-
-# Respuesta:
-# {
-#   "access_token": "eyJ0eXAi...",
-#   "token_type": "bearer",
-#   "user": {
-#     "id": "123e4567-e89b-12d3-a456-426614174000",
-#     "email": "carlos@university.edu",
-#     ...
-#   }
-# }
-```
-
-### Paso 2: Crear Dispositivo
-
-```bash
-TOKEN="eyJ0eXAi..."
-
-curl -X POST "http://localhost:8000/devices/" \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Dell XPS 15",
-    "device_type": "laptop",
-    "serial_number": "CN12345XYZ"
-  }'
-
-# Respuesta:
-# {
-#   "device": {
-#     "id": "device-uuid",
-#     "qr_data": "qr-uuid",
-#     "qr_code": "data:image/png;base64,iVBORw0K..."
-#   },
-#   ...
-# }
-```
-
-### Paso 3: Escanear QR (Registrar Acceso)
-
-```bash
-# Nota: No necesita autenticación, permite escaneo libre
-
-curl -X POST "http://localhost:8000/access/scan" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "qr_data": "qr-uuid-del-paso-2",
-    "access_type": "entrada",
-    "location": "Puerta Principal"
-  }'
-
-# Respuesta:
-# {
-#   "id": "access-record-id",
-#   "device_id": "device-uuid",
-#   "user_id": "user-uuid",
-#   "access_type": "entrada",
-#   "timestamp": "2024-01-15T14:35:22.123456+00:00",
-#   "location": "Puerta Principal"
-# }
-```
-
-### Paso 4: Ver Historial
-
-```bash
-TOKEN="eyJ0eXAi..."
-
-curl -X GET "http://localhost:8000/access/history?limit=10" \
-  -H "Authorization: Bearer $TOKEN"
-
-# Respuesta: Array con los últimos 10 accesos del usuario
-```
-
-## 🔍 Datos Demo
-
-Para testing, usar las credenciales pre-cargadas:
-
-| Email | Password | ID Estudiante | Nombre |
-|-------|----------|---------------|---------|
-| juan@university.edu | SecurePassword123! | 2023001 | Juan García López |
-| maria@university.edu | SecurePassword456! | 2023002 | María Rodríguez Silva |
-
-**Ejecución**: `python init_db.py`
-
-## 📊 Modelos de Base de Datos
-
-### Tabla: users
-```sql
-- id (UUID) PRIMARY KEY
-- email (VARCHAR 255) UNIQUE NOT NULL
-- password_hash (VARCHAR 255) NOT NULL
-- full_name (VARCHAR 255) NOT NULL
-- student_id (VARCHAR 20) UNIQUE NOT NULL
-- is_active (BOOLEAN) DEFAULT true
-- created_at, updated_at (TIMESTAMP WITH TZ)
-```
-
-### Tabla: devices
-```sql
-- id (UUID) PRIMARY KEY
-- user_id (UUID) FK → users.id
-- name (VARCHAR 255) NOT NULL
-- device_type (VARCHAR 50) NOT NULL
-- serial_number (VARCHAR 255) UNIQUE NOT NULL
-- qr_code (VARCHAR 1000) -- base64
-- qr_data (VARCHAR 500) UNIQUE NOT NULL
-- created_at, updated_at (TIMESTAMP WITH TZ)
-```
-
-### Tabla: access_records
-```sql
-- id (UUID) PRIMARY KEY
-- device_id (UUID) FK → devices.id
-- user_id (UUID) FK → users.id
-- access_type (ENUM: entrada, salida) NOT NULL
-- timestamp (TIMESTAMP WITH TZ) NOT NULL
-- location (VARCHAR 255)
-```
-
-## 🚀 Próximas Mejoras
-
-- [ ] Autenticación OAuth2
-- [ ] Integración con LDAP/Active Directory
-- [ ] Reportes y estadísticas
-- [ ] Notificaciones en tiempo real (WebSocket)
-- [ ] Exportar historial (CSV, PDF)
-- [ ] Múltiples ubicaciones
-- [ ] Roles y permisos (admin, user)
-- [ ] Integración con sistemas de puertas inteligentes
-
-## 📄 Licencia
-
-MIT License
-
-## ✉️ Soporte
-
-Para soporte o dudas: dev@university.edu
 
 ---
 
-**Versión**: 1.0.0  
-**Última actualización**: Enero 2024  
-**Estado**: Production Ready ✅
+## 📚 Uso
+
+### 1. Registro e Inicio de Sesión
+
+```bash
+# Registrar nuevo usuario
+curl -X POST http://localhost:8000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "estudiante@ejemplo.com",
+    "password": "Password123!",
+    "full_name": "Juan Pérez",
+    "student_id": "2024001",
+    "career": "Ingeniería de Sistemas"
+  }'
+
+# Iniciar sesión
+curl -X POST http://localhost:8000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "estudiante@ejemplo.com",
+    "password": "Password123!"
+  }'
+```
+
+### 2. Gestión de Dispositivos
+
+```bash
+# Crear dispositivo (requiere autenticación)
+curl -X POST http://localhost:8000/api/devices/ \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Mi Laptop HP",
+    "device_type": "laptop",
+    "serial_number": "HP-SN-2024-001"
+  }'
+
+# Listar mis dispositivos
+curl -X GET http://localhost:8000/api/devices/ \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+### 3. Registro de Accesos
+
+```bash
+# Registrar entrada (escaneo de QR)
+curl -X POST http://localhost:8000/api/access/record \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "qr_data": "DEVICE_QR_UUID",
+    "access_type": "entrada",
+    "location": "Edificio Principal"
+  }'
+
+# Ver historial de accesos
+curl -X GET http://localhost:8000/api/access/history \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+---
+
+## 📖 API Documentation
+
+### Documentación Interactiva
+
+Una vez que el backend esté ejecutándose, accede a:
+
+- **Swagger UI**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **ReDoc**: [http://localhost:8000/redoc](http://localhost:8000/redoc)
+
+### Principales Endpoints
+
+#### Autenticación
+- `POST /api/auth/register` - Registrar nuevo usuario
+- `POST /api/auth/login` - Iniciar sesión
+
+#### Usuarios
+- `GET /api/users/me` - Obtener perfil actual
+
+#### Dispositivos
+- `POST /api/devices/` - Crear dispositivo
+- `GET /api/devices/` - Listar dispositivos del usuario
+- `GET /api/devices/{id}` - Obtener dispositivo específico
+- `PUT /api/devices/{id}` - Actualizar dispositivo
+- `DELETE /api/devices/{id}` - Eliminar dispositivo
+- `GET /api/devices/{id}/qr` - Obtener código QR
+
+#### Accesos
+- `POST /api/access/record` - Registrar acceso
+- `GET /api/access/history` - Historial del usuario
+- `GET /api/access/device/{id}` - Historial por dispositivo
+
+---
+
+## 🧪 Testing
+
+### Backend
+
+```bash
+cd backend
+
+# Ejecutar todos los tests
+pytest
+
+# Con cobertura de código
+pytest --cov=app --cov-report=html
+
+# Ver reporte de cobertura
+open htmlcov/index.html
+```
+
+### Tests Incluidos
+- ✅ Tests de autenticación (registro, login)
+- ✅ Tests de gestión de dispositivos (CRUD completo)
+- ✅ Tests de registro de accesos
+- ✅ Tests de autorización y permisos
+- ✅ Tests de validación de datos
+
+---
+
+## 🏗 Estructura del Proyecto
+
+```
+ecci-control/
+├── backend/                    # API FastAPI
+│   ├── app/
+│   │   ├── api/
+│   │   │   └── endpoints/     # Endpoints de la API
+│   │   ├── core/              # Configuración, seguridad, logging
+│   │   ├── models/            # Modelos SQLAlchemy
+│   │   ├── schemas/           # Schemas Pydantic
+│   │   ├── services/          # Lógica de negocio
+│   │   └── utils/             # Utilidades
+│   ├── alembic/               # Migraciones de BD
+│   ├── tests/                 # Tests unitarios
+│   └── requirements.txt
+│
+├── frontend/                   # Aplicación React
+│   ├── src/
+│   │   ├── components/        # Componentes reutilizables
+│   │   ├── pages/             # Páginas/vistas
+│   │   ├── services/          # Servicios API
+│   │   ├── stores/            # State management
+│   │   └── styles/            # Estilos globales
+│   └── package.json
+│
+├── mobile2/                    # App React Native
+│   ├── src/
+│   │   ├── screens/           # Pantallas
+│   │   ├── components/        # Componentes móviles
+│   │   ├── navigation/        # Navegación
+│   │   └── services/          # Servicios API
+│   └── package.json
+│
+├── docker-compose.yml          # Orquestación Docker
+└── README.md
+```
+
+---
+
+## 🔒 Seguridad
+
+### Características de Seguridad Implementadas
+
+- ✅ **Autenticación JWT**: Tokens seguros con expiración
+- ✅ **Hashing de Contraseñas**: Bcrypt con salt
+- ✅ **Validación de Datos**: Pydantic schemas en todos los endpoints
+- ✅ **CORS Configurables**: Orígenes permitidos configurables
+- ✅ **Autorización por Recurso**: Verificación de propiedad
+- ✅ **SQL Injection Protection**: ORM SQLAlchemy
+- ✅ **Rate Limiting**: Configurable en producción
+- ✅ **Logging Completo**: Trazabilidad de acciones
+
+### Recomendaciones para Producción
+
+```bash
+# 1. Generar SECRET_KEY segura
+openssl rand -hex 32
+
+# 2. Usar variables de entorno
+export SECRET_KEY="tu-clave-generada"
+export ENVIRONMENT="production"
+export DEBUG="False"
+
+# 3. Configurar CORS restrictivo
+export CORS_ORIGINS="https://tu-dominio.com"
+
+# 4. Usar HTTPS
+# Implementar certificados SSL/TLS
+
+# 5. Configurar base de datos segura
+# Usar contraseñas fuertes y conexiones SSL
+```
+
+---
+
+## 📊 Base de Datos
+
+### Diagrama ER
+
+```
+┌─────────────┐         ┌──────────────┐         ┌────────────────┐
+│    User     │────────<│   Device     │────────<│ Access Record  │
+├─────────────┤         ├──────────────┤         ├────────────────┤
+│ id (PK)     │         │ id (PK)      │         │ id (PK)        │
+│ email       │         │ user_id (FK) │         │ device_id (FK) │
+│ password    │         │ name         │         │ user_id (FK)   │
+│ full_name   │         │ device_type  │         │ access_type    │
+│ student_id  │         │ serial_number│         │ timestamp      │
+│ career      │         │ qr_data      │         │ location       │
+│ created_at  │         │ qr_code      │         └────────────────┘
+└─────────────┘         │ created_at   │
+                        └──────────────┘
+```
+
+### Migraciones
+
+```bash
+# Crear nueva migración
+alembic revision --autogenerate -m "descripción"
+
+# Aplicar migraciones
+alembic upgrade head
+
+# Revertir última migración
+alembic downgrade -1
+```
+
+---
+
+## 🚢 Despliegue
+
+### Docker Production
+
+```bash
+# Build para producción
+docker-compose -f docker-compose.prod.yml build
+
+# Desplegar
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+### Plataformas Recomendadas
+
+- **Backend**: Railway, Render, DigitalOcean, AWS
+- **Frontend**: Vercel, Netlify, Cloudflare Pages
+- **Base de Datos**: Supabase, Railway, AWS RDS
+- **Mobile**: Expo EAS Build + App Stores
+
+---
+
+## 📝 Licencia
+
+Este proyecto está bajo la Licencia MIT. Ver el archivo [LICENSE](LICENSE) para más detalles.
+
+---
+
+## 👨‍💻 Autor
+
+**Sandro**
+
+- Portfolio: [tu-portfolio.com](https://tu-portfolio.com)
+- LinkedIn: [tu-linkedin](https://linkedin.com/in/tu-perfil)
+- GitHub: [@tu-usuario](https://github.com/tu-usuario)
+
+---
+
+## 🙏 Agradecimientos
+
+Este proyecto fue desarrollado como una solución real para digitalizar el control de acceso en instituciones educativas, mejorando significativamente la eficiencia operativa y la trazabilidad de dispositivos.
+
+---
+
+<div align="center">
+
+**⭐ Si este proyecto te pareció útil, considera darle una estrella ⭐**
+
+Made with ❤️ and ☕
+
+</div>

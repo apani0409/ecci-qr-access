@@ -3,6 +3,7 @@ version: '3.8'
 services:
   postgres:
     image: postgres:15-alpine
+    container_name: ecci-postgres
     environment:
       POSTGRES_USER: ecci_user
       POSTGRES_PASSWORD: ecci_password
@@ -12,42 +13,89 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ecci_user"]
+      test: ["CMD-SHELL", "pg_isready -U ecci_user -d ecci_control"]
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
+    networks:
+      - ecci-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: ecci-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - ecci-network
 
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    container_name: ecci-backend
     environment:
       DATABASE_URL: postgresql://ecci_user:ecci_password@postgres:5432/ecci_control
+      REDIS_URL: redis://redis:6379/0
       SECRET_KEY: ${SECRET_KEY:-your-secret-key-change-in-production}
+      ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 30
       DEBUG: "False"
+      ENVIRONMENT: ${ENVIRONMENT:-production}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      # Incluir el puerto de Expo Web (8081) además de 8082
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000,http://localhost:5173,http://localhost:8081,http://localhost:8082}
     ports:
       - "8000:8000"
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     volumes:
       - ./backend:/app
+      - backend_logs:/app/logs
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    restart: unless-stopped
+    networks:
+      - ecci-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    container_name: ecci-frontend
     ports:
-      - "3000:3000"
-    environment:
-      VITE_API_URL: http://localhost:8000
+      - "3000:80"
     depends_on:
       - backend
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    command: npm run dev
+    restart: unless-stopped
+    networks:
+      - ecci-network
 
 volumes:
   postgres_data:
+    name: ecci-postgres-data
+  redis_data:
+    name: ecci-redis-data
+  backend_logs:
+    name: ecci-backend-logs
+
+networks:
+  ecci-network:
+    name: ecci-network
+    driver: bridge

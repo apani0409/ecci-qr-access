@@ -18,13 +18,15 @@ class AccessRecord(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     device_id = Column(UUID(as_uuid=True), ForeignKey("devices.id", ondelete="CASCADE"), nullable=False)
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    access_type = Column(Enum(AccessType), nullable=False)
+    scanned_by_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    access_type = Column(Enum(AccessType, values_callable=lambda obj: [e.value for e in obj]), nullable=False)
     timestamp = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     location = Column(String(255), nullable=True)  # Optional: location where access occurred
 
     __table_args__ = (
         Index("ix_access_records_device_id", "device_id"),
         Index("ix_access_records_user_id", "user_id"),
+        Index("ix_access_records_scanned_by_id", "scanned_by_id"),
         Index("ix_access_records_timestamp", "timestamp"),
     )
 

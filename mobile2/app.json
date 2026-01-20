@@ -1,0 +1,34 @@
+{
+  "expo": {
+    "name": "ECCI Control Mobile",
+    "slug": "ecci-control-mobile",
+    "version": "1.0.0",
+    "scheme": "ecci-control-mobile",
+    "sdkVersion": "54.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTabletMode": true,
+      "bundleIdentifier": "com.ecci.control.mobile"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#3366FF"
+      },
+      "package": "com.ecci.control.mobile"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow ECCI Control to access your camera to scan QR codes"
+        }
+      ]
+    ]
+  }
+}

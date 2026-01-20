@@ -29,9 +29,14 @@ class AccessRecordResponse(BaseModel):
     id: UUID
     device_id: UUID
     user_id: UUID
+    scanned_by_id: UUID | None = None
     access_type: str
     timestamp: datetime
     location: Optional[str] = None
+    device_name: Optional[str] = None
+    device_serial_number: Optional[str] = None
+    user_name: Optional[str] = None
+    scanned_by_name: Optional[str] = None
 
     class Config:
         from_attributes = True

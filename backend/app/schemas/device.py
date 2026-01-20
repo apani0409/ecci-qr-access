@@ -7,6 +7,9 @@ from typing import Optional
 class DeviceCreate(BaseModel):
     name: str = Field(..., min_length=3, max_length=255)
     device_type: str = Field(..., min_length=3)  # laptop, phone, tablet, etc.
+    brand: Optional[str] = Field(None, max_length=100)
+    model: Optional[str] = Field(None, max_length=100)
+    photo: Optional[str] = None  # base64 or URL
     serial_number: str = Field(..., min_length=5)
 
     class Config:
@@ -22,6 +25,9 @@ class DeviceCreate(BaseModel):
 class DeviceUpdate(BaseModel):
     name: Optional[str] = Field(None, min_length=3, max_length=255)
     device_type: Optional[str] = None
+    brand: Optional[str] = Field(None, max_length=100)
+    model: Optional[str] = Field(None, max_length=100)
+    photo: Optional[str] = None
     serial_number: Optional[str] = Field(None, min_length=5)
 
     class Config:
@@ -38,6 +44,9 @@ class DeviceResponse(BaseModel):
     user_id: UUID
     name: str
     device_type: str
+    brand: Optional[str] = None
+    model: Optional[str] = None
+    photo: Optional[str] = None
     serial_number: str
     qr_data: str
     qr_code: Optional[str] = None
