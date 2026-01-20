@@ -481,15 +481,11 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo [LICENSE](LICENSE) para
 
 ## 👨‍💻 Autor
 
-**Sandro**
-
-- Portfolio: [tu-portfolio.com](https://tu-portfolio.com)
-- LinkedIn: [tu-linkedin](https://linkedin.com/in/tu-perfil)
-- GitHub: [@tu-usuario](https://github.com/tu-usuario)
+**Alessandro Pani**
 
 ---
 
-## 🙏 Agradecimientos
+##  Enfoque
 
 Este proyecto fue desarrollado como una solución real para digitalizar el control de acceso en instituciones educativas, mejorando significativamente la eficiencia operativa y la trazabilidad de dispositivos.
 
@@ -498,7 +494,5 @@ Este proyecto fue desarrollado como una solución real para digitalizar el contr
 <div align="center">
 
 **⭐ Si este proyecto te pareció útil, considera darle una estrella ⭐**
-
-Made with ❤️ and ☕
 
 </div>
