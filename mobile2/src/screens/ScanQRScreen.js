@@ -47,13 +47,13 @@ export const ScanQRScreen = ({ navigation }) => {
       await accessService.recordAccess(data);
       
       // Mostrar alerta de éxito
-      Alert.alert("✅ Éxito", "Acceso registrado correctamente");
+      Alert.alert("Éxito", "Acceso registrado correctamente");
       
       // Resetear después de 1.5 segundos automáticamente
       setTimeout(resetScanner, 1500);
     } catch (error) {
       Alert.alert(
-        "❌ Error",
+        "Error",
         error.message || "No se pudo registrar el acceso"
       );
       

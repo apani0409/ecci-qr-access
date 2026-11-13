@@ -34,11 +34,11 @@ mediciones de cuánto las acorta.
 
   | Acción                                   | Estudiante | Seguridad | Admin |
   |------------------------------------------|:----------:|:---------:|:-----:|
-  | Registrar / editar / borrar sus equipos  | ✓          | ✓         | ✓     |
-  | Escanear sus propios equipos             | ✓          | ✓         | ✓     |
-  | Escanear equipos de otras personas       |            | ✓         | ✓     |
-  | Ver el historial de todos                |            | ✓         | ✓     |
-  | Gestionar webhooks                       |            |           | ✓     |
+  | Registrar / editar / borrar sus equipos  | Sí         | Sí        | Sí    |
+  | Escanear sus propios equipos             | Sí         | Sí        | Sí    |
+  | Escanear equipos de otras personas       |            | Sí        | Sí    |
+  | Ver el historial de todos                |            | Sí        | Sí    |
+  | Gestionar webhooks                       |            |           | Sí    |
 
   El registro público siempre crea estudiantes; los roles de Seguridad y Admin los asigna un
   administrador (`backend/seed_users.py`).

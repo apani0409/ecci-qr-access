@@ -4,7 +4,7 @@
 API_URL="http://localhost:8000"
 TOKEN=""
 
-echo "🚀 Ejemplos de API ECCI Control"
+echo "Ejemplos de API ECCI Control"
 echo "================================"
 echo ""
 
@@ -43,7 +43,7 @@ echo ""
 TOKEN=$(echo "$REGISTER_RESPONSE" | jq -r '.access_token' 2>/dev/null)
 
 if [ -z "$TOKEN" ] || [ "$TOKEN" == "null" ]; then
-    echo -e "${YELLOW}⚠️  No se pudo obtener token de registro, intentando login...${NC}"
+    echo -e "${YELLOW} No se pudo obtener token de registro, intentando login...${NC}"
     LOGIN_RESPONSE=$(curl -s -X POST "$API_URL/auth/login" \
       -H "Content-Type: application/json" \
       -d '{
@@ -53,7 +53,7 @@ if [ -z "$TOKEN" ] || [ "$TOKEN" == "null" ]; then
     TOKEN=$(echo "$LOGIN_RESPONSE" | jq -r '.access_token' 2>/dev/null)
 fi
 
-echo -e "${GREEN}✓ Token obtenido${NC}"
+echo -e "${GREEN}Token obtenido${NC}"
 echo ""
 
 # 2. LOGIN
@@ -126,7 +126,7 @@ echo ""
 
 # Extraer QR data
 QR_DATA=$(echo "$DEVICE_RESPONSE" | jq -r '.device.qr_data' 2>/dev/null)
-echo -e "${GREEN}✓ QR Data: $QR_DATA${NC}"
+echo -e "${GREEN}QR Data: $QR_DATA${NC}"
 echo ""
 
 # 6. ESCANEAR QR
@@ -186,7 +186,7 @@ curl -s -X GET "$API_URL/health" | jq '.'
 echo ""
 
 echo -e "${GREEN}================================${NC}"
-echo -e "${GREEN}✅ Ejemplos de API completados${NC}"
+echo -e "${GREEN}Ejemplos de API completados${NC}"
 echo -e "${GREEN}================================${NC}"
 echo ""
 echo "Documentación interactiva: $API_URL/docs"

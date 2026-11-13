@@ -42,10 +42,10 @@ export const DeviceDetailScreen = ({ route, navigation }) => {
             try {
               setLoading(true);
               await deviceService.deleteDevice(device.id);
-              Alert.alert("✅ Éxito", "Dispositivo eliminado correctamente");
+              Alert.alert("Éxito", "Dispositivo eliminado correctamente");
               navigation.goBack();
             } catch (error) {
-              Alert.alert("❌ Error", "No se pudo eliminar el dispositivo");
+              Alert.alert("Error", "No se pudo eliminar el dispositivo");
             } finally {
               setLoading(false);
             }
@@ -69,7 +69,7 @@ export const DeviceDetailScreen = ({ route, navigation }) => {
         setQrImage(data.qr_code);
       }
     } catch (error) {
-      Alert.alert("❌ Error", "No se pudo obtener el código QR");
+      Alert.alert("Error", "No se pudo obtener el código QR");
     } finally {
       setLoading(false);
     }

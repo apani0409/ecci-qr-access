@@ -154,7 +154,7 @@ class EmailService:
         <body>
             <div class="container">
                 <div class="header">
-                    <h1>🔐 ECCI Control</h1>
+                    <h1>ECCI Control</h1>
                 </div>
 
                 <div class="content">
@@ -172,7 +172,7 @@ class EmailService:
                     <p style="word-break: break-all; color: #4F46E5;">{reset_link}</p>
 
                     <div class="warning">
-                        <strong>⏱️ Importante:</strong> Este enlace expirará en {settings.RESET_TOKEN_EXPIRE_MINUTES} minutos.
+                        <strong>Importante:</strong> Este enlace expirará en {settings.RESET_TOKEN_EXPIRE_MINUTES} minutos.
                     </div>
 
                     <p>Si no solicitaste restablecer tu contraseña, ignora este correo. Tu contraseña permanecerá sin cambios.</p>

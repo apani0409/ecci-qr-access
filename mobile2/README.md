@@ -2,7 +2,7 @@
 
 Aplicación móvil moderna con React Native y Expo para el sistema de control de acceso.
 
-## 🚀 Inicio Rápido
+## Inicio Rápido
 
 ### Instalación
 
@@ -26,16 +26,16 @@ expo start
 # - 'w' para web
 ```
 
-## 📱 Características
+## Características
 
-- ✅ Autenticación con JWT
-- ✅ Gestión de dispositivos
-- ✅ Escaneo de códigos QR
-- ✅ Historial de accesos
-- ✅ Perfil de usuario
-- ✅ Interfaz moderna con diseño Figma
+- Autenticación con JWT
+- Gestión de dispositivos
+- Escaneo de códigos QR
+- Historial de accesos
+- Perfil de usuario
+- Interfaz moderna con diseño Figma
 
-## 📁 Estructura del Proyecto
+## Estructura del Proyecto
 
 ```
 mobile2/
@@ -68,7 +68,7 @@ mobile2/
 └── README.md
 ```
 
-## 🎨 Tema y Colores
+## Tema y Colores
 
 Los colores están basados en el diseño de Figma:
 
@@ -77,7 +77,7 @@ Los colores están basados en el diseño de Figma:
 - **Error**: #FF3B30
 - **Éxito**: #34C759
 
-## 🔧 Configuración
+## Configuración
 
 Actualiza la URL base de API en `src/constants/api.js`:
 
@@ -86,7 +86,7 @@ const API_BASE_URL = "http://localhost:8000";
 // Para dispositivo físico: http://192.168.x.x:8000
 ```
 
-## 📡 API Integration
+## API Integration
 
 La app se conecta a los endpoints del backend FastAPI:
 
@@ -96,7 +96,7 @@ La app se conecta a los endpoints del backend FastAPI:
 - `GET /api/access/records`
 - etc.
 
-## 🚀 Build & Deploy
+## Build & Deploy
 
 ### Android
 
@@ -110,7 +110,7 @@ eas build --platform android
 eas build --platform ios
 ```
 
-## 📞 Soporte
+## Soporte
 
 Para problemas o preguntas, revisa:
 - Documentación de Expo: https://docs.expo.dev

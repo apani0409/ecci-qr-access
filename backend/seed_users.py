@@ -45,7 +45,7 @@ def seed_users():
     db = SessionLocal()
 
     try:
-        print("🌱 Seeding demo users...")
+        print("Seeding demo users...")
 
         for user_data in DEMO_USERS:
             # Check if user already exists
@@ -69,9 +69,9 @@ def seed_users():
             db.commit()
             db.refresh(new_user)
 
-            print(f"  ✅ Created {user_data['role'].value}: {user_data['email']}")
+            print(f"  Created {user_data['role'].value}: {user_data['email']}")
 
-        print("\n📋 Demo Users Summary:")
+        print("\nDemo Users Summary:")
         print("=" * 60)
         for user_data in DEMO_USERS:
             print(f"  Role: {user_data['role'].value.upper()}")
@@ -80,10 +80,10 @@ def seed_users():
             print(f"  Name: {user_data['full_name']}")
             print("-" * 60)
 
-        print("\n✅ Seeding completed successfully!")
+        print("\nSeeding completed successfully!")
 
     except Exception as e:
-        print(f"❌ Error seeding users: {e}")
+        print(f"Error seeding users: {e}")
         db.rollback()
         sys.exit(1)
     finally:

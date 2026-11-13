@@ -1,7 +1,7 @@
 #!/bin/bash
 # Script de deploy a producción
 
-echo "🚀 Iniciando deploy a producción..."
+echo "Iniciando deploy a producción..."
 
 # Configuración
 DEPLOY_PATH="/var/www/ecci-control"
@@ -37,6 +37,6 @@ cp -r dist/* /var/www/html/ecci-control/
 echo "Recargar nginx..."
 systemctl reload nginx
 
-echo -e "${GREEN}✅ Deploy completado${NC}"
+echo -e "${GREEN}Deploy completado${NC}"
 echo "API: https://$DOMAIN"
 echo "Frontend: https://$DOMAIN"

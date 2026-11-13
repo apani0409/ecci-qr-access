@@ -1,8 +1,8 @@
-# 📘 Guía de Contribución
+# Guía de Contribución
 
 ¡Gracias por tu interés en contribuir a ECCI Control! Este documento proporciona lineamientos para contribuir al proyecto.
 
-## 🚀 Cómo Empezar
+## Cómo Empezar
 
 ### 1. Fork y Clonación
 
@@ -36,7 +36,7 @@ cd mobile2
 npm install
 ```
 
-## 🌿 Flujo de Trabajo con Git
+## Flujo de Trabajo con Git
 
 ### Crear una Rama
 
@@ -77,7 +77,7 @@ git push origin feature/nueva-funcionalidad
 # - Screenshots si aplica
 ```
 
-## 📝 Estándares de Código
+## Estándares de Código
 
 ### Backend (Python)
 
@@ -119,14 +119,14 @@ npm run format
 - PropTypes o TypeScript para validación
 - CSS modules o Tailwind classes
 
-## 🧪 Testing
+## Testing
 
 ### Requisitos de Testing
 
-- ✅ **Nuevas features**: Deben incluir tests
-- ✅ **Bug fixes**: Agregar test que reproduzca el bug
-- ✅ **Cobertura mínima**: 80% para nuevas funciones
-- ✅ **Tests deben pasar**: Antes de hacer PR
+- **Nuevas features**: Deben incluir tests
+- **Bug fixes**: Agregar test que reproduzca el bug
+- **Cobertura mínima**: 80% para nuevas funciones
+- **Tests deben pasar**: Antes de hacer PR
 
 ### Escribir Tests
 
@@ -136,16 +136,16 @@ def test_nueva_funcionalidad(client, authenticated_client):
     """Descripción clara de qué se está probando"""
     # Arrange
     data = {"campo": "valor"}
-    
+
     # Act
     response = authenticated_client.post("/api/endpoint", json=data)
-    
+
     # Assert
     assert response.status_code == 200
     assert response.json()["campo"] == "valor"
 ```
 
-## 📚 Documentación
+## Documentación
 
 ### Actualizar Documentación
 
@@ -162,15 +162,15 @@ Cuando agregues/modifiques features:
 def crear_dispositivo(db: Session, user_id: UUID, data: DeviceCreate) -> Device:
     """
     Crea un nuevo dispositivo con código QR único.
-    
+
     Args:
         db: Sesión de base de datos SQLAlchemy
         user_id: ID del usuario propietario
         data: Datos del dispositivo a crear
-        
+
     Returns:
         Device: Instancia del dispositivo creado con QR
-        
+
     Raises:
         ConflictException: Si el serial_number ya existe
         ValidationException: Si los datos son inválidos
@@ -178,7 +178,7 @@ def crear_dispositivo(db: Session, user_id: UUID, data: DeviceCreate) -> Device:
     pass
 ```
 
-## 🔍 Code Review
+## Code Review
 
 ### Checklist antes de PR
 
@@ -197,7 +197,7 @@ def crear_dispositivo(db: Session, user_id: UUID, data: DeviceCreate) -> Device:
 3. Implementar feedback
 4. Una vez aprobado, se hace merge
 
-## 🐛 Reportar Bugs
+## Reportar Bugs
 
 ### Template de Issue
 
@@ -230,7 +230,7 @@ def crear_dispositivo(db: Session, user_id: UUID, data: DeviceCreate) -> Device:
 ```
 ```
 
-## ✨ Sugerir Features
+## Sugerir Features
 
 ### Template de Feature Request
 
@@ -251,7 +251,7 @@ def crear_dispositivo(db: Session, user_id: UUID, data: DeviceCreate) -> Device:
 [Screenshots, mockups, referencias]
 ```
 
-## 📋 Pull Request Template
+## Pull Request Template
 
 ```markdown
 ## Descripción
@@ -280,7 +280,7 @@ def crear_dispositivo(db: Session, user_id: UUID, data: DeviceCreate) -> Device:
 Closes #123
 ```
 
-## 🎯 Áreas para Contribuir
+## Áreas para Contribuir
 
 ### Backend
 - Agregar tests adicionales
@@ -314,7 +314,7 @@ Closes #123
 - Monitoring y alertas
 - Kubernetes configs
 
-## 📞 Contacto
+## Contacto
 
 ¿Preguntas sobre contribuciones?
 
@@ -324,10 +324,10 @@ Closes #123
 
 ---
 
-## 🙏 Reconocimiento
+## Reconocimiento
 
 Todos los contribuidores serán reconocidos en el README.md
 
 ---
 
-¡Gracias por contribuir a ECCI Control! 🎉
+¡Gracias por contribuir a ECCI Control!

@@ -15,13 +15,13 @@ def init_db():
     """Initialize database and create sample data."""
     print("Creating tables...")
     Base.metadata.create_all(bind=engine)
-    print("✓ Tables created")
+    print("Tables created")
 
     db = SessionLocal()
     try:
         # Check if data already exists
         if db.query(User).first():
-            print("✗ Database already initialized with data. Skipping...")
+            print("Database already initialized with data. Skipping...")
             return
 
         print("\nCreating sample users...")
@@ -67,7 +67,7 @@ def init_db():
         db.refresh(user2)
         db.refresh(user3)
 
-        print("✓ Created users:")
+        print("Created users:")
         print(f"  - {user1.full_name} ({user1.email}) - {user1.role.value}")
         print(f"  - {user2.full_name} ({user2.email}) - {user2.role.value}")
         print(f"  - {user3.full_name} ({user3.email}) - {user3.role.value}")
@@ -99,7 +99,7 @@ def init_db():
             serial_number="CN0XXXXX5XXXXX",
         )
 
-        print("✓ Created devices:")
+        print("Created devices:")
         print(f"  - {device1.name} (QR: {device1.qr_data[:8]}...)")
         print(f"  - {device2.name} (QR: {device2.qr_data[:8]}...)")
         print(f"  - {device3.name} (QR: {device3.qr_data[:8]}...)")
@@ -131,16 +131,16 @@ def init_db():
         db.add(access2)
         db.commit()
 
-        print(f"✓ Created access records: {access1.access_type.value}, {access2.access_type.value}")
+        print(f"Created access records: {access1.access_type.value}, {access2.access_type.value}")
 
-        print("\n✓ Database initialized successfully!")
-        print("\n🔐 Demo User Credentials:")
+        print("\nDatabase initialized successfully!")
+        print("\nDemo User Credentials:")
         print("  Admin:    admin@ecci.com / Admin123!")
         print("  Guard:    guard@ecci.com / Guard123!")
         print("  Student:  student@ecci.com / Student123!")
 
     except Exception as e:
-        print(f"✗ Error initializing database: {e}")
+        print(f"Error initializing database: {e}")
         db.rollback()
         raise
     finally:

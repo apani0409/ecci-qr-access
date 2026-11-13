@@ -43,12 +43,12 @@ export const AccessHistoryScreen = () => {
           {item.device_name || `Dispositivo ${item.device_id?.slice(0, 8) || ''}…`}
         </Text>
         <Text style={[styles.status, { color: item.access_type === 'entrada' ? theme.colors.success : theme.colors.warning }]}>
-          {item.access_type === 'entrada' ? '📥 Entrada' : '📤 Salida'}
+          {item.access_type === 'entrada' ? 'Entrada' : 'Salida'}
         </Text>
       </View>
       {item.user_name ? (
         <Text style={[styles.ownerName, { color: theme.colors.textSecondary }]}>
-          👤 {item.user_name}
+          {item.user_name}
         </Text>
       ) : null}
       {item.scanned_by_id ? (

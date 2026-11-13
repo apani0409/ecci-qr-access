@@ -2,7 +2,7 @@
 
 # Script para iniciar ECCI Control Mobile completo
 
-echo "🚀 Iniciando ECCI Control System..."
+echo "Iniciando ECCI Control System..."
 echo ""
 
 # Colores
@@ -16,7 +16,7 @@ PROJECT_DIR="/home/sandro/Dev/Projects/ecci-control"
 cd "$PROJECT_DIR"
 
 # 1. Iniciar Backend
-echo -e "${BLUE}📡 Iniciando Backend FastAPI...${NC}"
+echo -e "${BLUE}Iniciando Backend FastAPI...${NC}"
 cd "$PROJECT_DIR/backend"
 
 # Verificar si ya está corriendo
@@ -29,18 +29,18 @@ else
     sleep 3
     
     if curl -s http://192.168.110.126:8000/docs > /dev/null; then
-        echo -e "${GREEN}✅ Backend iniciado correctamente${NC}"
+        echo -e "${GREEN}Backend iniciado correctamente${NC}"
         echo -e "   URL: http://192.168.110.126:8000"
         echo -e "   Docs: http://192.168.110.126:8000/docs"
     else
-        echo -e "${YELLOW}⚠️  Backend podría tener problemas. Revisa /tmp/backend.log${NC}"
+        echo -e "${YELLOW} Backend podría tener problemas. Revisa /tmp/backend.log${NC}"
     fi
 fi
 
 echo ""
 
 # 2. Iniciar Expo
-echo -e "${BLUE}📱 Iniciando Expo Metro Bundler...${NC}"
+echo -e "${BLUE}Iniciando Expo Metro Bundler...${NC}"
 cd "$PROJECT_DIR/mobile2"
 
 # Limpiar puerto 8081 si está ocupado
@@ -59,33 +59,33 @@ sleep 10
 
 # Verificar Expo
 if curl -s http://localhost:8081 > /dev/null; then
-    echo -e "${GREEN}✅ Expo iniciado correctamente${NC}"
+    echo -e "${GREEN}Expo iniciado correctamente${NC}"
     echo ""
     echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "${GREEN}   🎉 SISTEMA LISTO PARA USAR${NC}"
+    echo -e "${GREEN}   SISTEMA LISTO PARA USAR${NC}"
     echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo ""
-    echo -e "${BLUE}📲 Para usar en tu celular:${NC}"
+    echo -e "${BLUE}Para usar en tu celular:${NC}"
     echo "   1. Descarga 'Expo Go' desde tu tienda de apps"
     echo "   2. Abre la terminal de Expo (este proceso)"
     echo "   3. Presiona 'r' para ver el QR code"
     echo "   4. Escanea el QR con Expo Go"
     echo ""
-    echo -e "${BLUE}🌐 Para usar en navegador web:${NC}"
+    echo -e "${BLUE}Para usar en navegador web:${NC}"
     echo "   URL: http://localhost:8081"
     echo "   O presiona 'w' en la terminal de Expo"
     echo ""
-    echo -e "${BLUE}📋 Credenciales de prueba:${NC}"
+    echo -e "${BLUE}Credenciales de prueba:${NC}"
     echo "   Email: test@ecci.ucr.ac.cr"
     echo "   Password: test12345"
     echo ""
-    echo -e "${BLUE}📝 O crea una nueva cuenta con:${NC}"
+    echo -e "${BLUE}O crea una nueva cuenta con:${NC}"
     echo "   - Nombre: mínimo 3 caracteres"
     echo "   - Carné: mínimo 5 caracteres"
     echo "   - Email: formato válido"
     echo "   - Password: mínimo 8 caracteres"
     echo ""
-    echo -e "${YELLOW}📄 Logs:${NC}"
+    echo -e "${YELLOW}Logs:${NC}"
     echo "   Backend: tail -f /tmp/backend.log"
     echo "   Expo: tail -f /tmp/expo.log"
     echo ""
@@ -103,6 +103,6 @@ if curl -s http://localhost:8081 > /dev/null; then
     tail -f /tmp/expo.log | grep -E "(QR|Metro|Logs|http|exp://)"
     
 else
-    echo -e "${YELLOW}⚠️  Expo podría tener problemas. Revisa /tmp/expo.log${NC}"
+    echo -e "${YELLOW} Expo podría tener problemas. Revisa /tmp/expo.log${NC}"
     echo "Intenta manualmente: cd mobile2 && npx expo start"
 fi
