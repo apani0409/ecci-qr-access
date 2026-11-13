@@ -147,3 +147,7 @@ temp/
 *.p8
 *.p12
 *.cer
+
+# Tooling caches
+.mypy_cache/
+.ruff_cache/

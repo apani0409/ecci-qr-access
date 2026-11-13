@@ -1,5 +1,5 @@
-from sqlalchemy import Column, String, DateTime, Boolean, ForeignKey, Index
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, String, DateTime, Boolean, ForeignKey
+from sqlalchemy import Uuid as UUID
 from datetime import datetime, timezone
 import uuid
 import secrets
@@ -15,10 +15,8 @@ class PasswordResetToken(Base):
     token = Column(String(255), unique=True, nullable=False, index=True)
     expires_at = Column(DateTime(timezone=True), nullable=False)
     used = Column(Boolean, default=False, nullable=False)
-    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
-
-    __table_args__ = (
-        Index("ix_password_reset_tokens_token", "token"),
+    created_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False
     )
 
     @staticmethod

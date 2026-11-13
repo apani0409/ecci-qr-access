@@ -1,64 +1,59 @@
-import React from 'react'
-import { useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../stores/authStore'
 import { ThemeToggle } from './ThemeToggle'
+import { ROLE_LABELS } from '../utils/format'
+
+const LINKS = [
+  ['/home', 'Inicio'],
+  ['/devices', 'Mis dispositivos'],
+  ['/scan', 'Escanear'],
+  ['/history', 'Historial'],
+  ['/profile', 'Perfil'],
+]
 
 export const Navigation = () => {
   const navigate = useNavigate()
   const { user, logout } = useAuthStore()
+  if (!user) return null
 
   const handleLogout = () => {
     logout()
     navigate('/login')
   }
 
-  if (!user) {
-    return null
-  }
+  const linkClass = ({ isActive }) =>
+    `whitespace-nowrap py-1 border-b-2 transition ${
+      isActive ? 'border-white font-semibold' : 'border-transparent hover:border-blue-200'
+    }`
 
   return (
-    <nav className="bg-blue-600 dark:bg-gray-800 text-white shadow-lg transition-colors">
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-8">
-            <h1 className="text-2xl font-bold">ECCI Control</h1>
-            <div className="hidden md:flex gap-6">
-              <button
-                onClick={() => navigate('/home')}
-                className="hover:text-blue-200 dark:hover:text-gray-300 transition"
-              >
-                Inicio
-              </button>
-              <button
-                onClick={() => navigate('/devices')}
-                className="hover:text-blue-200 dark:hover:text-gray-300 transition"
-              >
-                Dispositivos
-              </button>
-              <button
-                onClick={() => navigate('/scan')}
-                className="hover:text-blue-200 dark:hover:text-gray-300 transition"
-              >
-                Escanear
-              </button>
-              <button
-                onClick={() => navigate('/profile')}
-                className="hover:text-blue-200 dark:hover:text-gray-300 transition"
-              >
-                Perfil
-              </button>
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
+    <nav className="bg-blue-700 dark:bg-gray-800 text-white shadow-lg">
+      <div className="container py-3">
+        <div className="flex justify-between items-center gap-4">
+          <span className="text-xl font-bold">ECCI QR Access</span>
+          <div className="flex items-center gap-3">
             <ThemeToggle />
-            <span className="text-sm">{user?.full_name}</span>
+            <span className="hidden sm:block text-sm text-right leading-tight">
+              {user.full_name}
+              <br />
+              <span className="text-blue-200 dark:text-gray-400">
+                {ROLE_LABELS[user.role] ?? user.role}
+              </span>
+            </span>
             <button
               onClick={handleLogout}
-              className="bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 px-4 py-2 rounded transition"
+              className="bg-blue-900/60 hover:bg-blue-900 dark:bg-gray-700 dark:hover:bg-gray-600 px-3 py-2 rounded text-sm"
             >
-              Cerrar Sesión
+              Salir
             </button>
           </div>
+        </div>
+        <div className="flex gap-5 mt-3 overflow-x-auto text-sm">
+          {LINKS.map(([to, label]) => (
+            <NavLink key={to} to={to} className={linkClass}>
+              {label}
+            </NavLink>
+          ))}
         </div>
       </div>
     </nav>

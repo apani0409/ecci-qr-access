@@ -1,55 +1,40 @@
 import axios from 'axios'
+import { IS_DEMO } from '../demo/config'
+import { demoAdapter } from '../demo/mockApi'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  timeout: 10000, // 10 second timeout
+  baseURL: IS_DEMO ? '/api' : API_BASE_URL,
+  headers: { 'Content-Type': 'application/json' },
+  timeout: 10000,
+  // In demo mode requests never leave the browser: they are answered by the emulated API
+  ...(IS_DEMO ? { adapter: demoAdapter } : {}),
 })
 
-// Add token to requests
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('access_token')
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-  },
-  (error) => {
-    console.error('Request error:', error)
-    return Promise.reject(error)
-  }
-)
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('access_token')
+  if (token) config.headers.Authorization = `Bearer ${token}`
+  return config
+})
 
-// Handle errors globally
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Handle authentication errors
-    if (error.response?.status === 401) {
+    // Expired or invalid session: clear it and go back to login
+    if (error.response?.status === 401 && window.location.pathname !== '/login') {
       localStorage.removeItem('access_token')
       localStorage.removeItem('user')
-      
-      // Only redirect if not already on login page
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login'
-      }
+      window.location.href = '/login'
     }
-    
-    // Log errors for debugging
-    console.error('API Error:', {
-      url: error.config?.url,
-      method: error.config?.method,
-      status: error.response?.status,
-      message: error.response?.data?.detail || error.message,
-    })
-    
     return Promise.reject(error)
   }
 )
+
+/** Human-readable message from an API error. */
+export const errorMessage = (error, fallback) => {
+  const detail = error?.response?.data?.detail
+  return typeof detail === 'string' ? detail : fallback
+}
 
 export default api

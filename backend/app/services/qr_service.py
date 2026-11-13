@@ -30,28 +30,11 @@ def generate_qr_code(qr_data: str) -> str:
     return f"data:image/png;base64,{img_base64}"
 
 
-def create_device_with_qr(
-    db: Session, user_id, name: str, device_type: str, serial_number: str
-) -> Device:
-    """Create a device and generate its QR code"""
-    # Generate unique QR data (UUID)
+def create_device_with_qr(db: Session, user_id, **fields) -> Device:
+    """Create a device with a random, unguessable QR payload (UUID4)."""
     qr_data = str(uuid4())
-
-    # Generate QR code image
-    qr_code = generate_qr_code(qr_data)
-
-    # Create device
-    device = Device(
-        user_id=user_id,
-        name=name,
-        device_type=device_type,
-        serial_number=serial_number,
-        qr_data=qr_data,
-        qr_code=qr_code,
-    )
-
+    device = Device(user_id=user_id, qr_data=qr_data, qr_code=generate_qr_code(qr_data), **fields)
     db.add(device)
     db.commit()
     db.refresh(device)
-
     return device

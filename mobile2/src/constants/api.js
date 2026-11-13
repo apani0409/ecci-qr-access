@@ -17,13 +17,10 @@ export const Endpoints = {
   // Auth
   login: "/api/auth/login",
   register: "/api/auth/register",
-  biometric: "/api/auth/biometric",
   
   // Users
   profile: "/api/users/me",
   updateProfile: "/api/users/me",
-  enableBiometric: "/api/users/me/biometric/enable",
-  disableBiometric: "/api/users/me/biometric/disable",
   
   // Devices
   devices: "/api/devices/",

@@ -1,5 +1,5 @@
-from sqlalchemy import Column, String, DateTime, Boolean, Index, Enum, Text
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, String, DateTime, Boolean, Enum, Text
+from sqlalchemy import Uuid as UUID
 from datetime import datetime, timezone
 import uuid
 
@@ -21,12 +21,14 @@ class User(Base):
     biometric_public_key = Column(String(500), nullable=True)  # For biometric auth
     profile_photo = Column(Text, nullable=True)  # Base64 image
     dark_mode = Column(Boolean, default=False, nullable=False)
-    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
-    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
-
-    __table_args__ = (
-        Index("ix_users_email", "email"),
-        Index("ix_users_student_id", "student_id"),
+    created_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False
+    )
+    updated_at = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
     )
 
     def __repr__(self):

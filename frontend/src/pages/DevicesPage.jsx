@@ -1,205 +1,138 @@
-import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Navigation } from '../components/Navigation'
-import { useAuthStore } from '../stores/authStore'
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { Alert, Layout } from '../components/Layout'
 import { deviceService } from '../services/device'
+import { errorMessage } from '../services/api'
+import { DEVICE_TYPES } from '../utils/format'
+
+const EMPTY_FORM = { name: '', device_type: 'laptop', brand: '', model: '', serial_number: '' }
+
+const ERRORS = {
+  'Device with this serial number already exists': 'Ya existe un dispositivo con ese número de serie',
+}
 
 export const DevicesPage = () => {
-  const navigate = useNavigate()
-  const { user } = useAuthStore()
   const [devices, setDevices] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
   const [showForm, setShowForm] = useState(false)
-  const [formData, setFormData] = useState({
-    name: '',
-    device_type: '',
-    serial_number: '',
-  })
-
-  useEffect(() => {
-    if (!user) {
-      navigate('/login')
-      return
-    }
-    loadDevices()
-  }, [user, navigate])
+  const [formData, setFormData] = useState(EMPTY_FORM)
+  const [saving, setSaving] = useState(false)
 
   const loadDevices = async () => {
     try {
-      setIsLoading(true)
-      const data = await deviceService.getDevices()
-      setDevices(data)
+      setDevices(await deviceService.getDevices())
       setError('')
     } catch (err) {
-      setError('Error al cargar dispositivos')
-      console.error(err)
+      setError(errorMessage(err, 'Error al cargar dispositivos'))
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+  useEffect(() => {
+    loadDevices()
+  }, [])
+
+  const handleChange = (e) => setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setSaving(true)
     try {
-      await deviceService.createDevice(formData)
-      setFormData({ name: '', device_type: '', serial_number: '' })
+      const payload = Object.fromEntries(
+        Object.entries(formData).map(([k, v]) => [k, v.trim() || null])
+      )
+      await deviceService.createDevice(payload)
+      setFormData(EMPTY_FORM)
       setShowForm(false)
       await loadDevices()
     } catch (err) {
-      setError('Error al crear dispositivo')
-      console.error(err)
-    }
-  }
-
-  const handleDelete = async (deviceId) => {
-    if (confirm('¿Estás seguro de que quieres eliminar este dispositivo?')) {
-      try {
-        await deviceService.deleteDevice(deviceId)
-        await loadDevices()
-      } catch (err) {
-        setError('Error al eliminar dispositivo')
-        console.error(err)
-      }
+      const detail = errorMessage(err, 'Error al registrar el dispositivo')
+      setError(ERRORS[detail] ?? detail)
+    } finally {
+      setSaving(false)
     }
   }
 
   return (
-    <div>
-      <Navigation />
-      <div className="min-h-screen bg-gray-50 py-12">
-        <div className="container mx-auto">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-800">Mis Dispositivos</h1>
-            <button
-              onClick={() => setShowForm(!showForm)}
-              className="btn-primary"
-            >
-              {showForm ? 'Cancelar' : '+ Nuevo Dispositivo'}
-            </button>
+    <Layout
+      title="Mis dispositivos"
+      actions={
+        <button onClick={() => setShowForm(!showForm)} className="btn-primary">
+          {showForm ? 'Cancelar' : '+ Nuevo dispositivo'}
+        </button>
+      }
+    >
+      <Alert>{error}</Alert>
+
+      {showForm && (
+        <form onSubmit={handleSubmit} className="card mb-8 max-w-2xl grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <h2 className="sm:col-span-2 text-xl font-bold text-gray-800 dark:text-gray-100">
+            Registrar dispositivo
+          </h2>
+          <div className="sm:col-span-2">
+            <label htmlFor="name" className="form-label">Nombre</label>
+            <input id="name" name="name" required minLength={3} value={formData.name} onChange={handleChange} className="form-input" placeholder="Mi laptop" />
           </div>
-
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
-              {error}
-            </div>
-          )}
-
-          {showForm && (
-            <div className="card mb-8 max-w-2xl">
-              <h2 className="text-xl font-bold text-gray-800 mb-6">Registrar Nuevo Dispositivo</h2>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="form-label">Nombre del Dispositivo</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="form-input"
-                    placeholder="Mi Laptop, iPhone, etc."
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="form-label">Tipo de Dispositivo</label>
-                  <select
-                    name="device_type"
-                    value={formData.device_type}
-                    onChange={handleChange}
-                    className="form-input"
-                    required
-                  >
-                    <option value="">Selecciona un tipo</option>
-                    <option value="laptop">Laptop</option>
-                    <option value="phone">Teléfono</option>
-                    <option value="tablet">Tablet</option>
-                    <option value="otros">Otros</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="form-label">Número de Serie</label>
-                  <input
-                    type="text"
-                    name="serial_number"
-                    value={formData.serial_number}
-                    onChange={handleChange}
-                    className="form-input"
-                    placeholder="C02AB123DE45"
-                    required
-                  />
-                </div>
-
-                <button type="submit" className="btn-primary w-full">
-                  Registrar Dispositivo
-                </button>
-              </form>
-            </div>
-          )}
-
-          {isLoading ? (
-            <div className="text-center py-12">
-              <p className="text-gray-600">Cargando dispositivos...</p>
-            </div>
-          ) : devices.length === 0 ? (
-            <div className="card text-center py-12">
-              <p className="text-gray-600 mb-4">No tienes dispositivos registrados</p>
-              <button
-                onClick={() => setShowForm(true)}
-                className="btn-primary"
-              >
-                Registra tu primer dispositivo
-              </button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {devices.map((device) => (
-                <div key={device.id} className="card">
-                  <h3 className="text-lg font-bold text-gray-800 mb-2">{device.name}</h3>
-                  <p className="text-sm text-gray-600 mb-3">
-                    Tipo: <span className="font-semibold">{device.device_type}</span>
-                  </p>
-                  <p className="text-sm text-gray-600 mb-4">
-                    Serial: <span className="font-mono text-xs">{device.serial_number}</span>
-                  </p>
-                  
-                  {device.qr_code && (
-                    <div className="mb-4 flex justify-center">
-                      <img
-                        src={device.qr_code}
-                        alt="QR Code"
-                        className="w-32 h-32 border border-gray-300 rounded"
-                      />
-                    </div>
-                  )}
-
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => navigate(`/device/${device.id}`)}
-                      className="flex-1 btn-secondary text-sm"
-                    >
-                      Ver Detalles
-                    </button>
-                    <button
-                      onClick={() => handleDelete(device.id)}
-                      className="flex-1 btn-danger text-sm"
-                    >
-                      Eliminar
-                    </button>
-                  </div>
-                </div>
+          <div>
+            <label htmlFor="device_type" className="form-label">Tipo</label>
+            <select id="device_type" name="device_type" value={formData.device_type} onChange={handleChange} className="form-input">
+              {Object.entries(DEVICE_TYPES).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
               ))}
-            </div>
-          )}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="serial_number" className="form-label">Número de serie</label>
+            <input id="serial_number" name="serial_number" required minLength={5} value={formData.serial_number} onChange={handleChange} className="form-input font-mono" placeholder="PF-3A9K21" />
+          </div>
+          <div>
+            <label htmlFor="brand" className="form-label">Marca (opcional)</label>
+            <input id="brand" name="brand" value={formData.brand} onChange={handleChange} className="form-input" placeholder="Lenovo" />
+          </div>
+          <div>
+            <label htmlFor="model" className="form-label">Modelo (opcional)</label>
+            <input id="model" name="model" value={formData.model} onChange={handleChange} className="form-input" placeholder="ThinkPad E14" />
+          </div>
+          <button type="submit" disabled={saving} className="sm:col-span-2 btn-primary disabled:opacity-50">
+            {saving ? 'Registrando…' : 'Registrar y generar QR'}
+          </button>
+        </form>
+      )}
+
+      {isLoading ? (
+        <p className="text-center py-12 text-gray-600 dark:text-gray-400">Cargando dispositivos…</p>
+      ) : devices.length === 0 ? (
+        <div className="card text-center py-12">
+          <p className="text-gray-600 dark:text-gray-400 mb-4">No tienes dispositivos registrados.</p>
+          <button onClick={() => setShowForm(true)} className="btn-primary">
+            Registra tu primer dispositivo
+          </button>
         </div>
-      </div>
-    </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {devices.map((device) => (
+            <Link key={device.id} to={`/devices/${device.id}`} className="card block hover:border-blue-400">
+              <div className="flex gap-4">
+                {device.qr_code && (
+                  <img src={device.qr_code} alt={`QR de ${device.name}`} className="w-24 h-24 rounded border border-gray-200 bg-white" />
+                )}
+                <div className="min-w-0">
+                  <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 truncate">{device.name}</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {DEVICE_TYPES[device.device_type] ?? device.device_type}
+                    {device.brand && ` · ${device.brand}`}
+                    {device.model && ` ${device.model}`}
+                  </p>
+                  <p className="text-xs font-mono text-gray-500 dark:text-gray-400 mt-1 truncate">{device.serial_number}</p>
+                  <p className="text-sm text-blue-700 dark:text-blue-400 mt-2">Ver QR e historial →</p>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
+    </Layout>
   )
 }

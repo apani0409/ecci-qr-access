@@ -1,15 +1,10 @@
 #!/usr/bin/env python
 """Initialize database with sample data."""
 
-import sys
-import os
 from datetime import datetime, timezone
 
-# Add parent directory to path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-
 from app.core.database import SessionLocal, Base, engine
-from app.models import User, Device, AccessRecord
+from app.models import User, AccessRecord
 from app.core.security import hash_password
 from app.services.qr_service import create_device_with_qr
 from app.models.access_record import AccessType
@@ -30,10 +25,10 @@ def init_db():
             return
 
         print("\nCreating sample users...")
-        
+
         # Create demo users with different roles
         from app.models.role import UserRole
-        
+
         user1 = User(
             id=uuid.uuid4(),
             email="admin@ecci.com",
@@ -53,7 +48,7 @@ def init_db():
             role=UserRole.SECURITY,
             is_active=True,
         )
-        
+
         user3 = User(
             id=uuid.uuid4(),
             email="student@ecci.com",
@@ -72,7 +67,7 @@ def init_db():
         db.refresh(user2)
         db.refresh(user3)
 
-        print(f"✓ Created users:")
+        print("✓ Created users:")
         print(f"  - {user1.full_name} ({user1.email}) - {user1.role.value}")
         print(f"  - {user2.full_name} ({user2.email}) - {user2.role.value}")
         print(f"  - {user3.full_name} ({user3.email}) - {user3.role.value}")
@@ -82,29 +77,29 @@ def init_db():
         # Create sample devices with QR codes
         device1 = create_device_with_qr(
             db,
-            user1.id,
-            "MacBook Pro",
-            "laptop",
-            "C02AB123DE45"
+            user3.id,
+            name="MacBook Pro",
+            device_type="laptop",
+            serial_number="C02AB123DE45",
         )
 
         device2 = create_device_with_qr(
             db,
-            user1.id,
-            "iPhone 14",
-            "phone",
-            "DNXXXX5L2P5G"
+            user3.id,
+            name="iPhone 14",
+            device_type="phone",
+            serial_number="DNXXXX5L2P5G",
         )
 
         device3 = create_device_with_qr(
             db,
             user2.id,
-            "Dell XPS",
-            "laptop",
-            "CN0XXXXX5XXXXX"
+            name="Dell XPS",
+            device_type="laptop",
+            serial_number="CN0XXXXX5XXXXX",
         )
 
-        print(f"✓ Created devices:")
+        print("✓ Created devices:")
         print(f"  - {device1.name} (QR: {device1.qr_data[:8]}...)")
         print(f"  - {device2.name} (QR: {device2.qr_data[:8]}...)")
         print(f"  - {device3.name} (QR: {device3.qr_data[:8]}...)")
@@ -115,8 +110,9 @@ def init_db():
         access1 = AccessRecord(
             id=uuid.uuid4(),
             device_id=device1.id,
-            user_id=user1.id,
-            access_type=AccessType.ENTRADA.value,
+            user_id=user3.id,
+            scanned_by_id=user2.id,
+            access_type=AccessType.ENTRADA,
             timestamp=datetime.now(timezone.utc),
             location="Puerta Entrada Principal",
         )
@@ -124,8 +120,9 @@ def init_db():
         access2 = AccessRecord(
             id=uuid.uuid4(),
             device_id=device1.id,
-            user_id=user1.id,
-            access_type=AccessType.SALIDA.value,
+            user_id=user3.id,
+            scanned_by_id=user2.id,
+            access_type=AccessType.SALIDA,
             timestamp=datetime.now(timezone.utc),
             location="Puerta Entrada Principal",
         )

@@ -1,186 +1,146 @@
-import React, { useState, useRef, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Navigation } from '../components/Navigation'
-import { useAuthStore } from '../stores/authStore'
+import { useEffect, useRef, useState } from 'react'
+import { Alert, Layout } from '../components/Layout'
 import { accessService } from '../services/access'
+import { errorMessage } from '../services/api'
+import { useAuthStore } from '../stores/authStore'
+import { IS_DEMO } from '../demo/config'
+import { listAllDemoDevices } from '../demo/mockApi'
+import { formatDateTime, isStaff } from '../utils/format'
+
+const ERRORS = {
+  'Device not found': 'Código QR no reconocido: no corresponde a ningún dispositivo registrado.',
+  'No autorizado para registrar este dispositivo':
+    'Este dispositivo no es tuyo. Solo Seguridad puede registrar equipos de otras personas.',
+}
 
 export const ScanPage = () => {
-  const navigate = useNavigate()
-  const { user } = useAuthStore()
-  const [qrInput, setQrInput] = useState('')
-  const [accessType, setAccessType] = useState('entrada')
-  const [location, setLocation] = useState('')
-  const [message, setMessage] = useState('')
-  const [messageType, setMessageType] = useState('')
+  const user = useAuthStore((s) => s.user)
+  const staff = isStaff(user)
   const inputRef = useRef(null)
+  const [qrInput, setQrInput] = useState('')
+  const [accessType, setAccessType] = useState('salida')
+  const [location, setLocation] = useState(staff ? 'Salida ECCI' : '')
+  const [result, setResult] = useState(null)
+  const [error, setError] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [demoDevices, setDemoDevices] = useState([])
 
   useEffect(() => {
-    if (!user) {
-      navigate('/login')
-      return
-    }
-    // Focus input on load
-    if (inputRef.current) {
-      inputRef.current.focus()
-    }
-  }, [user, navigate])
+    if (IS_DEMO) listAllDemoDevices().then(setDemoDevices)
+  }, [])
 
   const handleScan = async (e) => {
     e.preventDefault()
-
-    if (!qrInput.trim()) {
-      showMessage('Por favor ingresa un código QR', 'error')
-      return
-    }
-
+    if (!qrInput.trim()) return setError('Escanea o pega el contenido del código QR')
+    setBusy(true)
+    setError('')
+    setResult(null)
     try {
-      const result = await accessService.scanQR({
-        qr_data: qrInput,
-        access_type: accessType,
-        location: location || null,
-      })
-
-      showMessage(
-        `✓ Acceso registrado: ${result.access_type} - ${new Date(result.timestamp).toLocaleTimeString()}`,
-        'success'
+      setResult(
+        await accessService.scanQR({
+          qr_data: qrInput.trim(),
+          access_type: accessType,
+          location: location.trim() || null,
+        })
       )
       setQrInput('')
-      setLocation('')
-      
-      if (inputRef.current) {
-        inputRef.current.focus()
-      }
     } catch (err) {
-      const errorMsg = err.response?.data?.detail || 'Error al registrar acceso'
-      showMessage(errorMsg, 'error')
+      const detail = errorMessage(err, 'Error al registrar el acceso')
+      setError(ERRORS[detail] ?? detail)
+    } finally {
+      setBusy(false)
+      inputRef.current?.focus()
     }
-  }
-
-  const showMessage = (msg, type) => {
-    setMessage(msg)
-    setMessageType(type)
-    setTimeout(() => setMessage(''), 5000)
   }
 
   return (
-    <div>
-      <Navigation />
-      <div className="min-h-screen bg-gray-50 py-12">
-        <div className="container mx-auto">
-          <div className="max-w-2xl mx-auto">
-            <div className="card">
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">Escanear Código QR</h1>
-              <p className="text-gray-600 mb-8">
-                Escanea el código QR de tu dispositivo para registrar entrada o salida
-              </p>
+    <Layout title="Registrar entrada / salida">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <section className="card lg:col-span-2">
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            {staff
+              ? 'Escanea el QR de cualquier dispositivo en la puerta. Un lector QR USB escribe el código en el campo y envía el formulario solo.'
+              : 'Registra la entrada o salida de uno de tus dispositivos.'}
+          </p>
 
-              {message && (
-                <div
-                  className={`px-4 py-3 rounded mb-6 ${
-                    messageType === 'success'
-                      ? 'bg-green-50 border border-green-200 text-green-700'
-                      : 'bg-red-50 border border-red-200 text-red-700'
-                  }`}
-                >
-                  {message}
-                </div>
-              )}
+          {result && (
+            <Alert type="success">
+              <strong>{result.access_type === 'entrada' ? 'Entrada' : 'Salida'} registrada</strong> ·{' '}
+              {formatDateTime(result.timestamp)}
+              <br />
+              {result.device_name} ({result.device_serial_number}) de <strong>{result.user_name}</strong>
+            </Alert>
+          )}
+          <Alert>{error}</Alert>
 
-              <form onSubmit={handleScan} className="space-y-6">
-                <div>
-                  <label className="form-label">Código QR / Datos QR</label>
-                  <input
-                    ref={inputRef}
-                    type="text"
-                    value={qrInput}
-                    onChange={(e) => setQrInput(e.target.value)}
-                    className="form-input text-center text-lg font-mono"
-                    placeholder="Escanea aquí o pega el código QR"
-                    autoFocus
-                  />
-                  <p className="text-xs text-gray-500 mt-2">
-                    Este campo se enfoca automáticamente para escaneo rápido
-                  </p>
-                </div>
-
-                <div>
-                  <label className="form-label">Tipo de Acceso</label>
-                  <div className="flex gap-4">
-                    <label className="flex items-center">
-                      <input
-                        type="radio"
-                        value="entrada"
-                        checked={accessType === 'entrada'}
-                        onChange={(e) => setAccessType(e.target.value)}
-                        className="mr-2"
-                      />
-                      <span className="text-gray-700">Entrada</span>
-                    </label>
-                    <label className="flex items-center">
-                      <input
-                        type="radio"
-                        value="salida"
-                        checked={accessType === 'salida'}
-                        onChange={(e) => setAccessType(e.target.value)}
-                        className="mr-2"
-                      />
-                      <span className="text-gray-700">Salida</span>
-                    </label>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="form-label">Ubicación (Opcional)</label>
-                  <input
-                    type="text"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    className="form-input"
-                    placeholder="Puerta Entrada, Sala de Estudio, etc."
-                  />
-                </div>
-
-                <button type="submit" className="btn-primary w-full text-lg py-3">
-                  Registrar Acceso
-                </button>
-              </form>
-
-              <div className="mt-8 pt-6 border-t border-gray-200">
-                <h2 className="text-lg font-semibold text-gray-800 mb-4">Información de Ayuda</h2>
-                <div className="space-y-3 text-sm text-gray-600">
-                  <p>
-                    • Usa un lector QR de escritorio o escanea con tu cámara
-                  </p>
-                  <p>
-                    • El código QR se genera automáticamente al crear un dispositivo
-                  </p>
-                  <p>
-                    • Cada escaneo registra la entrada o salida con timestamp
-                  </p>
-                  <p>
-                    • Puedes ver el historial de accesos en tu perfil
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-6 flex gap-4">
-                <button
-                  onClick={() => navigate('/devices')}
-                  className="flex-1 btn-secondary"
-                >
-                  Ver Dispositivos
-                </button>
-                <button
-                  onClick={() => navigate('/home')}
-                  className="flex-1 btn-secondary"
-                >
-                  Ir al Inicio
-                </button>
-              </div>
+          <form onSubmit={handleScan} className="space-y-6">
+            <div>
+              <label htmlFor="qr" className="form-label">Contenido del código QR</label>
+              <input
+                id="qr"
+                ref={inputRef}
+                autoFocus
+                autoComplete="off"
+                value={qrInput}
+                onChange={(e) => setQrInput(e.target.value)}
+                className="form-input text-center text-lg font-mono"
+                placeholder="Escanea aquí"
+              />
             </div>
-          </div>
-        </div>
+
+            <fieldset>
+              <legend className="form-label">Tipo de acceso</legend>
+              <div className="flex gap-6 text-gray-700 dark:text-gray-300">
+                {['entrada', 'salida'].map((t) => (
+                  <label key={t} className="flex items-center gap-2">
+                    <input type="radio" name="access_type" value={t} checked={accessType === t} onChange={() => setAccessType(t)} />
+                    {t === 'entrada' ? 'Entrada' : 'Salida'}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+
+            <div>
+              <label htmlFor="location" className="form-label">Ubicación (opcional)</label>
+              <input id="location" value={location} onChange={(e) => setLocation(e.target.value)} className="form-input" placeholder="Salida ECCI" />
+            </div>
+
+            <button type="submit" disabled={busy} className="btn-primary w-full text-lg py-3 disabled:opacity-50">
+              {busy ? 'Registrando…' : 'Registrar'}
+            </button>
+          </form>
+        </section>
+
+        {IS_DEMO && (
+          <aside className="card">
+            <h2 className="font-bold text-gray-800 dark:text-gray-100 mb-1">Simular lectura de QR</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              En la demo no hay lector físico: elige un dispositivo para cargar su código.
+              {!staff && ' Si eliges uno que no es tuyo, verás el rechazo por permisos.'}
+            </p>
+            <ul className="space-y-2">
+              {demoDevices.map((d) => (
+                <li key={d.id}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setQrInput(d.qr_data)
+                      inputRef.current?.focus()
+                    }}
+                    className="w-full text-left border dark:border-gray-600 rounded-lg px-3 py-2 hover:bg-blue-50 dark:hover:bg-gray-700"
+                  >
+                    <span className="font-medium text-gray-800 dark:text-gray-100">{d.name}</span>
+                    <span className="block text-xs text-gray-500 dark:text-gray-400">
+                      {d.owner_name}
+                      {d.user_id === user.id && ' (tuyo)'} · {d.serial_number}
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </aside>
+        )}
       </div>
-    </div>
+    </Layout>
   )
 }

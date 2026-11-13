@@ -1,14 +1,24 @@
 import { create } from 'zustand'
 import { authService } from '../services/auth'
+import { errorMessage } from '../services/api'
+
+const readStoredUser = () => {
+  try {
+    const token = localStorage.getItem('access_token')
+    const user = localStorage.getItem('user')
+    return token && user ? { token, user: JSON.parse(user) } : { token: null, user: null }
+  } catch {
+    return { token: null, user: null }
+  }
+}
 
 export const useAuthStore = create((set) => ({
-  user: null,
-  token: null,
+  // Read synchronously so a page refresh does not bounce to /login
+  ...readStoredUser(),
   isLoading: false,
   error: null,
 
-  setUser: (user) => set({ user }),
-  setToken: (token) => set({ token }),
+  clearError: () => set({ error: null }),
 
   login: async (email, password) => {
     set({ isLoading: true, error: null })
@@ -17,8 +27,7 @@ export const useAuthStore = create((set) => ({
       set({ user: data.user, token: data.access_token, isLoading: false })
       return data
     } catch (error) {
-      const message = error.response?.data?.detail || 'Error en login'
-      set({ error: message, isLoading: false })
+      set({ error: errorMessage(error, 'Error al iniciar sesión'), isLoading: false })
       throw error
     }
   },
@@ -35,8 +44,7 @@ export const useAuthStore = create((set) => ({
       set({ user: data.user, token: data.access_token, isLoading: false })
       return data
     } catch (error) {
-      const message = error.response?.data?.detail || 'Error en registro'
-      set({ error: message, isLoading: false })
+      set({ error: errorMessage(error, 'Error en el registro'), isLoading: false })
       throw error
     }
   },
@@ -44,13 +52,5 @@ export const useAuthStore = create((set) => ({
   logout: () => {
     authService.logout()
     set({ user: null, token: null, error: null })
-  },
-
-  checkAuth: () => {
-    const token = localStorage.getItem('access_token')
-    const user = localStorage.getItem('user')
-    if (token && user) {
-      set({ token, user: JSON.parse(user) })
-    }
   },
 }))

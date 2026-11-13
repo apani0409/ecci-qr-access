@@ -1,11 +1,14 @@
-from sqlalchemy.orm import Session
-from uuid import UUID
-from datetime import datetime, timezone
 import logging
+from datetime import datetime, timezone
+from typing import Optional
+from uuid import UUID
 
+from sqlalchemy.orm import Session, aliased
+
+from app.core.authorization import can_view_all_access
+from app.core.exceptions import AuthorizationException
 from app.models import AccessRecord, AccessType, Device, User
 from app.services.device_service import DeviceService
-from app.core.exceptions import ValidationException, AuthorizationException
 
 logger = logging.getLogger(__name__)
 
@@ -16,143 +19,86 @@ class AccessService:
         db: Session,
         qr_data: str,
         access_type: str,
-        location: str,
-        current_user,
-    ) -> AccessRecord:
-        """Record access when QR is scanned"""
-        logger.info(
-            "Recording access: type=%s, location=%s, scanned_by=%s",
-            access_type,
-            location,
-            getattr(current_user, "id", None),
-        )
+        location: Optional[str],
+        current_user: User,
+    ) -> dict:
+        """Record an entry/exit when a device QR is scanned.
 
-        # Get device by QR data
+        Security and admin users may scan any device (the guard at the door).
+        Students may only register their own devices.
+        """
         device = DeviceService.get_device_by_qr_data(db, qr_data)
 
-        # If scanner is a student, only allow their own devices
-        if getattr(current_user, "role", None) == "student" and device.user_id != current_user.id:
-            logger.warning(
-                "Unauthorized scan attempt by student: device=%s user=%s",
-                device.id,
-                current_user.id,
-            )
+        if not can_view_all_access(current_user) and device.user_id != current_user.id:
+            logger.warning("Student %s tried to scan device %s", current_user.id, device.id)
             raise AuthorizationException("No autorizado para registrar este dispositivo")
 
-        # Normalize access type to match enum values
-        raw_type = getattr(access_type, "value", access_type)
-        normalized_type = str(raw_type or "").strip().lower()
+        record = AccessRecord(
+            device_id=device.id,
+            user_id=device.user_id,
+            scanned_by_id=current_user.id,
+            access_type=AccessType(access_type),
+            timestamp=datetime.now(timezone.utc),
+            location=location,
+        )
+        db.add(record)
+        db.commit()
 
-        # Validate and convert to AccessType enum
-        try:
-            access_type_enum = AccessType(normalized_type)
-        except ValueError:
-            logger.warning(f"Invalid access type received: {access_type}")
-            raise ValidationException(
-                f"Invalid access type '{access_type}'; expected 'entrada' or 'salida'"
-            )
-
-        try:
-            access_record = AccessRecord(
-                device_id=device.id,
-                user_id=device.user_id,
-                scanned_by_id=current_user.id if current_user else None,
-                access_type=access_type_enum,
-                timestamp=datetime.now(timezone.utc),
-                location=location,
-            )
-
-            db.add(access_record)
-            db.commit()
-            db.refresh(access_record)
-
-            logger.info(
-                "Access recorded successfully: device=%s, type=%s, owner=%s, scanned_by=%s",
-                device.id,
-                access_type_enum.value,
-                device.user_id,
-                getattr(current_user, "id", None),
-            )
-
-            return access_record
-        except Exception as e:
-            logger.error(f"Failed to record access: {str(e)}")
-            db.rollback()
-            raise
+        logger.info(
+            "Access recorded: device=%s type=%s scanned_by=%s",
+            device.id,
+            record.access_type.value,
+            current_user.id,
+        )
+        return AccessService._history_query(db).filter(AccessRecord.id == record.id).one()._asdict()
 
     @staticmethod
     def get_device_access_history(
-        db: Session,
-        device_id: UUID,
-        current_user,
-        limit: int = 100,
+        db: Session, device_id: UUID, current_user: User, limit: int = 100
     ):
-        """Get access history for a device"""
-        logger.info(f"Fetching access history for device {device_id}")
-
+        """History for one device: owner, security and admin only."""
         device = DeviceService.get_device(db, device_id)
+        if not can_view_all_access(current_user) and device.user_id != current_user.id:
+            raise AuthorizationException("Not authorized to view this device's access history")
 
-        # Verify ownership unless security/admin
-        role = getattr(current_user, "role", None)
-        if role not in ("security", "admin") and device.user_id != current_user.id:
-            logger.warning(
-                "Unauthorized access history request: device=%s, user=%s",
-                device_id,
-                current_user.id,
-            )
-            raise AuthorizationException(
-                "Not authorized to view this device's access history"
-            )
-
-        records = (
-            db.query(AccessRecord)
+        rows = (
+            AccessService._history_query(db)
             .filter(AccessRecord.device_id == device_id)
             .order_by(AccessRecord.timestamp.desc())
             .limit(limit)
             .all()
         )
-
-        logger.info(f"Found {len(records)} access records for device {device_id}")
-        return [AccessService._serialize_access_record(db, r) for r in records]
+        return [row._asdict() for row in rows]
 
     @staticmethod
-    def get_user_access_history(db: Session, current_user, limit: int = 100):
-        """Get access history for a user or all if security/admin"""
-        logger.info(f"Fetching access history for user {current_user.id}")
+    def get_user_access_history(db: Session, current_user: User, limit: int = 100):
+        """Students see their own records; security/admin see every record."""
+        query = AccessService._history_query(db)
+        if not can_view_all_access(current_user):
+            query = query.filter(AccessRecord.user_id == current_user.id)
+        rows = query.order_by(AccessRecord.timestamp.desc()).limit(limit).all()
+        return [row._asdict() for row in rows]
 
-        role = getattr(current_user, "role", None)
-        query = db.query(AccessRecord)
-
-        if role in ("security", "admin"):
-            # Security/admin see all records
-            records = query.order_by(AccessRecord.timestamp.desc()).limit(limit).all()
-        else:
-            records = (
-                query.filter(AccessRecord.user_id == current_user.id)
-                .order_by(AccessRecord.timestamp.desc())
-                .limit(limit)
-                .all()
+    @staticmethod
+    def _history_query(db: Session):
+        """Access records joined with device, owner and scanner names (one query, no N+1)."""
+        owner = aliased(User)
+        scanner = aliased(User)
+        return (
+            db.query(
+                AccessRecord.id,
+                AccessRecord.device_id,
+                AccessRecord.user_id,
+                AccessRecord.scanned_by_id,
+                AccessRecord.access_type,
+                AccessRecord.timestamp,
+                AccessRecord.location,
+                Device.name.label("device_name"),
+                Device.serial_number.label("device_serial_number"),
+                owner.full_name.label("user_name"),
+                scanner.full_name.label("scanned_by_name"),
             )
-
-        logger.info(f"Found {len(records)} access records for user {current_user.id} (role={role})")
-        return [AccessService._serialize_access_record(db, r) for r in records]
-
-    @staticmethod
-    def _serialize_access_record(db: Session, record: AccessRecord):
-        device = db.query(Device).get(record.device_id) if record.device_id else None
-        owner = db.query(User).get(record.user_id) if record.user_id else None
-        scanner = db.query(User).get(record.scanned_by_id) if record.scanned_by_id else None
-
-        return {
-            "id": record.id,
-            "device_id": record.device_id,
-            "user_id": record.user_id,
-            "scanned_by_id": record.scanned_by_id,
-            "access_type": getattr(record.access_type, "value", record.access_type),
-            "timestamp": record.timestamp,
-            "location": record.location,
-            "device_name": getattr(device, "name", None),
-            "device_serial_number": getattr(device, "serial_number", None),
-            "user_name": getattr(owner, "full_name", None),
-            "scanned_by_name": getattr(scanner, "full_name", None),
-        }
+            .outerjoin(Device, Device.id == AccessRecord.device_id)
+            .outerjoin(owner, owner.id == AccessRecord.user_id)
+            .outerjoin(scanner, scanner.id == AccessRecord.scanned_by_id)
+        )

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from datetime import datetime
 from uuid import UUID
 from typing import Optional
@@ -6,37 +6,39 @@ from typing import Optional
 
 class DeviceCreate(BaseModel):
     name: str = Field(..., min_length=3, max_length=255)
-    device_type: str = Field(..., min_length=3)  # laptop, phone, tablet, etc.
+    device_type: str = Field(..., min_length=3, max_length=50)  # laptop, phone, tablet, etc.
     brand: Optional[str] = Field(None, max_length=100)
     model: Optional[str] = Field(None, max_length=100)
     photo: Optional[str] = None  # base64 or URL
-    serial_number: str = Field(..., min_length=5)
+    serial_number: str = Field(..., min_length=5, max_length=255)
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "name": "MacBook Pro",
                 "device_type": "laptop",
                 "serial_number": "C02AB123DE45",
             }
-        }
+        },
+    )
 
 
 class DeviceUpdate(BaseModel):
     name: Optional[str] = Field(None, min_length=3, max_length=255)
-    device_type: Optional[str] = None
+    device_type: Optional[str] = Field(None, min_length=3, max_length=50)
     brand: Optional[str] = Field(None, max_length=100)
     model: Optional[str] = Field(None, max_length=100)
     photo: Optional[str] = None
-    serial_number: Optional[str] = Field(None, min_length=5)
+    serial_number: Optional[str] = Field(None, min_length=5, max_length=255)
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "name": "MacBook Pro Updated",
                 "device_type": "laptop",
             }
-        }
+        },
+    )
 
 
 class DeviceResponse(BaseModel):
@@ -53,10 +55,9 @@ class DeviceResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
-
-        json_schema_extra = {
+    model_config = ConfigDict(
+        from_attributes=True,
+        json_schema_extra={
             "example": {
                 "id": "550e8400-e29b-41d4-a716-446655440000",
                 "user_id": "550e8400-e29b-41d4-a716-446655440001",
@@ -68,15 +69,16 @@ class DeviceResponse(BaseModel):
                 "created_at": "2024-01-15T10:30:00+00:00",
                 "updated_at": "2024-01-15T10:30:00+00:00",
             }
-        }
+        },
+    )
 
 
 class DeviceWithQR(BaseModel):
     device: DeviceResponse
     qr_image_base64: str
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "device": {
                     "id": "550e8400-e29b-41d4-a716-446655440000",
@@ -91,4 +93,5 @@ class DeviceWithQR(BaseModel):
                 },
                 "qr_image_base64": "data:image/png;base64,...",
             }
-        }
+        },
+    )

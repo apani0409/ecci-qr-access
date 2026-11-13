@@ -1,6 +1,5 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional, List
-import secrets
 
 
 class Settings(BaseSettings):
@@ -12,6 +11,9 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
+    # Rate limiting (disabled in the test suite)
+    RATE_LIMIT_ENABLED: bool = True
+
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"
 
@@ -20,14 +22,18 @@ class Settings(BaseSettings):
     API_VERSION: str = "1.0.0"
     API_DESCRIPTION: str = "Sistema de Control de Acceso y Registro de Dispositivos"
     DEBUG: bool = False
+    # Run Base.metadata.create_all() on startup (dev convenience; use Alembic in production)
+    AUTO_CREATE_TABLES: bool = True
 
     # CORS
-    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:5173,http://localhost:8081,http://localhost:8082"
+    CORS_ORIGINS: str = (
+        "http://localhost:3000,http://localhost:5173,http://localhost:8081,http://localhost:8082"
+    )
 
     # Application
     ENVIRONMENT: str = "development"
     LOG_LEVEL: str = "INFO"
-    
+
     # Email Configuration
     SMTP_HOST: str = "smtp.gmail.com"
     SMTP_PORT: int = 587
@@ -35,15 +41,12 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: Optional[str] = None
     SMTP_FROM_EMAIL: str = "noreply@ecci-control.com"
     SMTP_FROM_NAME: str = "ECCI Control System"
-    
+
     # Password Reset
     RESET_TOKEN_EXPIRE_MINUTES: int = 30
     FRONTEND_URL: str = "http://localhost:8081"
 
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
-        extra = "allow"  # Allow extra environment variables
+    model_config = SettingsConfigDict(env_file=".env", case_sensitive=True, extra="ignore")
 
     @property
     def cors_origins_list(self) -> List[str]:
@@ -58,8 +61,7 @@ class Settings(BaseSettings):
     def validate_secret_key(self) -> None:
         """Validate that SECRET_KEY is properly set in production"""
         if self.ENVIRONMENT == "production" and (
-            not self.SECRET_KEY or 
-            self.SECRET_KEY == "your-secret-key-change-me-in-production"
+            not self.SECRET_KEY or self.SECRET_KEY == "your-secret-key-change-me-in-production"
         ):
             raise ValueError(
                 "SECRET_KEY must be set to a secure value in production. "
