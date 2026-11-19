@@ -119,6 +119,9 @@ que el backend, con las mismas reglas de permisos y códigos de error, pero guar
 `localStorage` del navegador. No hay servidor ni base de datos: nada sale del navegador y el
 botón **Reiniciar datos** restaura los datos de ejemplo. Personas y equipos son ficticios.
 
+En la primera visita la demo entra sola como Seguridad (guarda) y abre el inicio; el botón
+**Cambiar de rol** del banner lleva al login, donde se elige otra cuenta.
+
 Cuentas de la demo (contraseña `Demo1234!`): `estudiante@ecci.demo`, `guarda@ecci.demo`,
 `admin@ecci.demo`. En la página de escaneo hay un panel para simular la lectura de un QR.
 

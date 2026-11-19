@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { authService } from '../services/auth'
 import { errorMessage } from '../services/api'
+import { IS_DEMO, demoSession } from '../demo/config'
 
 const readStoredUser = () => {
   try {
@@ -24,6 +25,7 @@ export const useAuthStore = create((set) => ({
     set({ isLoading: true, error: null })
     try {
       const data = await authService.login({ email, password })
+      if (IS_DEMO) demoSession.clear()
       set({ user: data.user, token: data.access_token, isLoading: false })
       return data
     } catch (error) {
@@ -51,6 +53,7 @@ export const useAuthStore = create((set) => ({
 
   logout: () => {
     authService.logout()
+    if (IS_DEMO) demoSession.markSignedOut()
     set({ user: null, token: null, error: null })
   },
 }))

@@ -9,6 +9,9 @@ export const DEMO_ACCOUNTS = [
   { role: 'admin', label: 'Admin', email: 'admin@ecci.demo', hint: 'Acceso total' },
 ]
 
+/** Account the demo signs in with on a first visit: the guard, who sees every device's history. */
+export const DEFAULT_DEMO_ACCOUNT = DEMO_ACCOUNTS.find((a) => a.role === 'security')
+
 const user = (id, email, full_name, student_id, role, created) => ({
   id,
   email,
